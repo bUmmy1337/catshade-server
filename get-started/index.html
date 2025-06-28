@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подать заявку - CATSHADE Realm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --s-light: #F8F9FA;
+            --s-dark: #212529;
+            --s-accent: #4a90e2;
+            --s-gray: #6c757d;
+        }
+
+        body {
+            background-color: var(--s-light);
+            color: var(--s-dark);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .font-unbounded {
+            font-family: 'Unbounded', sans-serif;
+        }
+
+        /* --- Стили для страницы заявки --- */
+        .form-container {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .gform-wrapper {
+            position: relative;
+            width: 100%;
+            height: 1450px; /* Начальная высота, позже JS ее скорректирует */
+            overflow: hidden;
+        }
+
+        .gform-wrapper iframe {
+            position: absolute;
+            top: -65px; /* Скрываем стандартный заголовок формы Google */
+            left: 0;
+            width: 100%;
+            height: calc(100% + 65px); /* Компенсируем скрытый заголовок */
+            border: 0;
+        }
+
+        header.scrolled {
+            @apply bg-white/80 backdrop-blur-sm shadow-md;
+        }
+
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <header class="sticky top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-md">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/index.html" class="text-2xl font-bold font-unbounded hover:text-s-accent transition-colors">CATSHADE</a>
+                <nav class="hidden md:flex space-x-8 text-sm uppercase tracking-widest">
+                    <a href="/index.html#about" class="hover:text-s-accent transition-colors">О сервере</a>
+                    <a href="/index.html#steps" class="hover:text-s-accent transition-colors">Как начать</a>
+                    <a href="/index.html#rules" class="hover:text-s-accent transition-colors">Правила</a>
+                    <a href="/apply.html" class="font-bold text-s-accent">Заявка</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-20 md:py-24">
+        <div class="container mx-auto px-6">
+            <div class="form-container max-w-4xl mx-auto">
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl md:text-5xl font-unbounded font-bold mb-4">Анкета на сервер</h1>
+                    <p class="text-lg text-s-gray max-w-2xl mx-auto">
+                        Пожалуйста, отвечай на вопросы честно и развернуто. Это поможет нам познакомиться с тобой поближе. Удачи!
+                    </p>
+                </div>
+                
+                <!-- Контейнер для Google Формы -->
+                <div class="bg-white p-4 sm:p-8 rounded-xl shadow-lg">
+                    <div class="gform-wrapper">
+                        <!-- !!! ЗАМЕНИТЕ 'YOUR_FORM_LINK' НА ВАШУ ССЫЛКУ !!! -->
+                        <iframe id="gform" src="https://docs.google.com/forms/d/e/1FAIpQLSd35LYFS-qF71xUd8IdEeq5M5BVVz52poLpOeJpO6hETM45Rg/viewform?embedded=true" frameborder="0" marginheight="0" marginwidth="0">Загрузка…</iframe>
+                    </div>
+                </div>
+
+                <div class="text-center mt-8 text-s-gray text-sm">
+                    <p>После отправки мы рассмотрим заявку в течение 24 часов.</p>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-10 bg-gray-800 text-gray-400 mt-16">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 CATSHADE. Все права защищены.</p>
+            <p class="text-sm mt-2">Этот сервер не связан с Mojang Studios.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const header = document.querySelector('header');
+            const onScroll = () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            };
+            window.addEventListener('scroll', onScroll, { passive: true });
+        
+            // Плавная прокрутка для главной страницы
+            document.querySelectorAll('a[href^="/index.html#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    window.location.href = this.getAttribute('href');
+                });
+            });
+
+        });
+    </script>
+</body>
+
+</html>
