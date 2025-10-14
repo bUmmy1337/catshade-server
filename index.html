@@ -12,8 +12,8 @@
         :root {
             --s-light: #F8F9FA;
             --s-dark: #212529;
-            --s-accent: #4a90e2;
-            --s-accent-dark: #357abd;
+            --s-accent: #e0b98d; /* Warm beige */
+            --s-accent-dark: #c29a6e; /* Darker beige for hover */
             --s-gray: #6c757d;
         }
 
@@ -87,24 +87,38 @@
         
         /* --- Улучшенные стили кнопок --- */
         .btn {
-            @apply inline-block px-8 py-4 rounded-lg font-unbounded text-sm uppercase tracking-wider transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-300;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2rem; /* px-8 py-4 */
+            border-radius: 9999px; /* rounded-full */
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.875rem; /* text-sm */
+            text-transform: uppercase;
+            letter-spacing: 0.05em; /* tracking-wider */
+            transition: all 0.3s ease-in-out;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(66, 153, 225, 0); /* focus:ring-4 focus:ring-blue-300 */
         }
 
         .btn-primary {
-            @apply text-white shadow-lg;
-            background-image: linear-gradient(to right, var(--s-accent) 0%, #589eef 51%, var(--s-accent) 100%);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            background-image: linear-gradient(to right, var(--s-accent-dark) 0%, var(--s-accent) 51%, var(--s-accent-dark) 100%);
             background-size: 200% auto;
+            border: none;
         }
         
         .btn-primary:hover {
-            @apply shadow-xl;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-xl */
             transform: translateY(-3px);
             background-position: right center;
         }
 
         .btn-primary:active {
-            @apply shadow-md;
+            box-shadow: 0 5px 10px -2px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
             transform: translateY(-1px) scale(0.98);
+            background-position: left center;
         }
         
         header.scrolled {
@@ -120,9 +134,9 @@
                 <div class="text-2xl font-bold font-unbounded">CATSHADE</div>
                 <nav class="hidden md:flex space-x-8 text-sm uppercase tracking-widest">
                     <a href="#about" class="hover:text-s-accent transition-colors">О сервере</a>
-                    <a href="#steps" class="hover:text-s-accent transition-colors">Как начать</a>
+                    <a href="#get-started-full" class="hover:text-s-accent transition-colors">Как начать</a>
                     <a href="#rules" class="hover:text-s-accent transition-colors">Правила</a>
-                    <a href="#apply" class="hover:text-s-accent transition-colors">Заявка</a>
+                    <a href="http://srv.catshade.ru:19173/" class="hover:text-s-accent transition-colors" target="_blank" rel="noopener noreferrer">Сообщество</a>
                 </nav>
             </div>
         </div>
@@ -138,10 +152,13 @@
                             Твой ванильный мир.
                         </h1>
                         <p class="text-lg md:text-xl text-s-gray max-w-xl mx-auto md:mx-0 mb-8">
-                            CATSHADE — это приватный Minecraft сервер для тех, кто ценит чистое выживание, дружное сообщество и уважение к чужому труду.
+                            CATSHADE — это Minecraft сервер для тех, кто ценит чистое выживание, дружное сообщество и уважение к чужому труду. Присоединяйся к нам и начни свое приключение!
                         </p>
-                        <a href="#steps" class="btn btn-primary">
-                            Начать приключение
+                        <a href="#get-started-full" class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd" />
+                            </svg>
+                            Начать игру
                         </a>
                     </div>
                     <!-- Правая колонка: Плейсхолдер для картинки -->
@@ -157,63 +174,37 @@
                 <h2 class="section-title text-center text-4xl font-unbounded font-bold mb-12">Что такое CATSHADE?</h2>
                 <div class="about-content max-w-4xl mx-auto text-center text-s-gray text-base md:text-lg leading-relaxed space-y-4">
                     <p>
-                        Мы создали этот сервер с одной целью — собрать вместе зрелых и адекватных игроков, которые хотят наслаждаться оригинальным Minecraft без модов, плагинов на телепортацию и приват. У нас нет доната, влияющего на игру, и нет случайных людей.
+                        Мы создали этот сервер с одной целью — собрать вместе зрелых и адекватных игроков, которые хотят наслаждаться оригинальным Minecraft без модов, плагинов на телепортацию и приватов. У нас нет доната, влияющего на игру.
                     </p>
                     <p>
-                        Каждый игрок проходит отбор через анкету, что позволяет нам формировать сплоченное сообщество, где каждый уважает друг друга. Мы строим, творим и выживаем вместе. Если тебе близок такой подход — добро пожаловать.
+                        CATSHADE открыт для всех желающих! Присоединяйся к нашему сплоченному сообществу, где каждый уважает друг друга. Мы строим, творим и выживаем вместе. Добро пожаловать!
                     </p>
                 </div>
             </div>
         </section>
 
-    <section id="steps" class="py-20 md:py-32 bg-white animated-section">
-  <div class="container mx-auto px-6">
-    <h2 class="section-title text-center text-4xl font-unbounded font-bold mb-20">3 шага до начала игры</h2>
-    <div class="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-4">
-
-      <!-- Step 1: Анкета -->
-      <div class="step-card text-center flex flex-col items-center">
-        <div class="relative w-24 h-24 flex items-center justify-center bg-s-light rounded-full mb-4">
-          <span class="font-unbounded text-4xl text-s-accent">1</span>
+    <section id="get-started-full" class="py-20 md:py-32 bg-white animated-section">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-center text-4xl font-unbounded font-bold mb-12">Как начать играть на CATSHADE</h2>
+            <div class="max-w-4xl mx-auto text-s-gray text-base md:text-lg leading-relaxed space-y-6">
+                <div class="step-card p-6 border-l-4 border-s-accent bg-white rounded-r-lg shadow-sm">
+                    <h3 class="font-unbounded font-bold text-xl mb-2 text-s-dark">Шаг 1: Установите Minecraft Java Edition</h3>
+                    <p>Убедитесь, что у вас установлена официальная версия Minecraft Java Edition. Наш сервер работает на последней стабильной версии игры.</p>
+                </div>
+                <div class="step-card p-6 border-l-4 border-s-accent bg-white rounded-r-lg shadow-sm">
+                    <h3 class="font-unbounded font-bold text-xl mb-2 text-s-dark">Шаг 2: Добавьте сервер в список</h3>
+                    <p>Откройте Minecraft, перейдите в раздел "Сетевая игра" и нажмите "Добавить сервер".</p>
+                    <p class="mt-2">В поле "Адрес сервера" введите: <code class="bg-gray-200 p-1 rounded">play.catshade.ru</code></p>
+                    <p class="mt-2">Нажмите "Готово".</p>
+                </div>
+                <div class="step-card p-6 border-l-4 border-s-accent bg-white rounded-r-lg shadow-sm">
+                    <h3 class="font-unbounded font-bold text-xl mb-2 text-s-dark">Шаг 3: Присоединяйтесь к игре!</h3>
+                    <p>Выберите CATSHADE Realm из списка серверов и нажмите "Подключиться". Добро пожаловать в наш мир!</p>
+                    <p class="mt-2">Если у вас возникнут вопросы, посетите наш раздел <a href="http://srv.catshade.ru:19173/" class="text-s-accent hover:underline" target="_blank" rel="noopener noreferrer">Сообщество</a>.</p>
+                </div>
+            </div>
         </div>
-        <h3 class="font-unbounded text-lg font-bold mb-2">Анкета</h3>
-        <p class="text-s-gray max-w-xs">Заполни небольшую анкету, чтобы мы могли познакомиться с тобой.</p>
-      </div>
-
-      <!-- Arrow -->
-      <div class="arrow-container hidden md:block mx-4">
-        <svg width="150" height="50" viewBox="0 0 150 50">
-          <path d="M5,25 C50,45 100,5 145,25" stroke="var(--s-accent)" stroke-width="2" fill="none" class="arrow-path" stroke-linecap="round" />
-        </svg>
-      </div>
-
-      <!-- Step 2: Ожидание -->
-      <div class="step-card text-center flex flex-col items-center">
-        <div class="relative w-24 h-24 flex items-center justify-center bg-s-light rounded-full mb-4">
-          <span class="font-unbounded text-4xl text-s-accent">2</span>
-        </div>
-        <h3 class="font-unbounded text-lg font-bold mb-2">Ожидание</h3>
-        <p class="text-s-gray max-w-xs">Мы рассмотрим твою заявку в течение 24 часов и добавим в белый список.</p>
-      </div>
-
-      <!-- Arrow -->
-      <div class="arrow-container hidden md:block mx-4">
-        <svg width="150" height="50" viewBox="0 0 150 50">
-          <path d="M5,25 C50,5 100,45 145,25" stroke="var(--s-accent)" stroke-width="2" fill="none" class="arrow-path" stroke-linecap="round" />
-        </svg>
-      </div>
-
-      <!-- Step 3: Играй -->
-      <div class="step-card text-center flex flex-col items-center">
-        <div class="relative w-24 h-24 flex items-center justify-center bg-s-light rounded-full mb-4">
-          <span class="font-unbounded text-4xl text-s-accent">3</span>
-        </div>
-        <h3 class="font-unbounded text-lg font-bold mb-2">Играй!</h3>
-        <p class="text-s-gray max-w-xs">Получив одобрение, заходи на сервер и начинай свое приключение!</p>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
 
 
 
@@ -259,12 +250,15 @@
         <section id="apply" class="py-20 md:py-32 bg-white animated-section">
             <div class="container mx-auto px-6 text-center">
                  <div class="apply-content">
-                    <h2 class="section-title text-4xl font-unbounded font-bold mb-6">Готов присоединиться?</h2>
+                    <h2 class="section-title text-4xl font-unbounded font-bold mb-6">Присоединяйтесь к CATSHADE!</h2>
                     <p class="text-lg text-s-gray max-w-2xl mx-auto mb-8">
-                       Если тебе подходят наши принципы и ты хочешь стать частью нашего мира, нажми кнопку ниже и заполни анкету. Мы ждем тебя!
+                       Мы всегда рады новым игрокам. Начните свое приключение прямо сейчас!
                     </p>
-                    <a href="/get-started" class="btn btn-primary">
-                        Подать заявку
+                    <a href="#get-started-full" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Начать игру
                     </a>
                 </div>
             </div>
