@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CatShade: Technomagic Download</title>
+    <style>
+        :root {
+            --bg-color: #09090b;
+            --card-bg: rgba(24, 24, 27, 0.6);
+            --text-main: #ececec;
+            --text-muted: #a1a1aa;
+            --accent: #8b5cf6; /* Technomagic Violet */
+            --accent-glow: rgba(139, 92, 246, 0.3);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.2);
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Inter, sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% -20%, #2e1065, var(--bg-color) 60%);
+        }
+
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle { color: var(--text-muted); margin-bottom: 3rem; font-size: 1.1rem; }
+
+        /* Stages Logic */
+        .stage {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .stage.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Launcher Grid */
+        .launcher-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .launcher-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 1.5rem;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+        }
+
+        .launcher-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px -10px var(--accent-glow);
+        }
+
+        .l-info { text-align: left; }
+        .l-name { font-weight: 600; font-size: 1.1rem; display: block; }
+        .l-desc { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* Dangerous Style */
+        .launcher-card.danger {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        .launcher-card.danger:hover {
+            border-color: var(--danger);
+            box-shadow: 0 10px 30px -10px var(--danger-glow);
+        }
+        .danger-tag {
+            color: var(--danger);
+            font-size: 0.75rem;
+            font-weight: bold;
+            border: 1px solid var(--danger);
+            padding: 2px 8px;
+            border-radius: 99px;
+            margin-left: 10px;
+            text-transform: uppercase;
+        }
+
+        /* Download Button Styling */
+        .download-btn {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 1rem 3rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            box-shadow: 0 0 20px var(--accent-glow);
+            transition: transform 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .download-btn:hover { transform: scale(1.05); }
+
+        .file-info {
+            margin-top: 1.5rem;
+            font-family: monospace;
+            color: var(--text-muted);
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .back-link {
+            margin-top: 2rem;
+            display: block;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: underline; 
+            text-decoration-color: transparent;
+            transition: 0.3s;
+        }
+        .back-link:hover { text-decoration-color: var(--text-muted); }
+
+        /* Icons (Simple CSS Shapes or SVG) */
+        .icon-modern { width: 12px; height: 12px; background: var(--success); border-radius: 50%; display: inline-block; margin-right: 8px; box-shadow: 0 0 10px var(--success); }
+        .icon-legacy { width: 12px; height: 12px; background: #fbbf24; border-radius: 2px; display: inline-block; margin-right: 8px; }
+        
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="header">
+            <h1>CatShade</h1>
+            <p class="subtitle">Сборка Technomagic</p>
+        </div>
+
+        <div id="step-1" class="stage active">
+            <p style="margin-bottom: 1rem; color: var(--text-muted);">Выберите ваш лаунчер для продолжения</p>
+            
+            <div class="launcher-grid">
+                <div class="launcher-card" onclick="goToDownload('mrpack')">
+                    <div class="l-info">
+                        <span class="l-name"><span class="icon-modern"></span>Современные</span>
+                        <span class="l-desc">Prism, MultiMC, Fjord, PolyMC</span>
+                    </div>
+                    <div style="color: var(--text-muted)">›</div>
+                </div>
+
+                <div class="launcher-card" onclick="goToDownload('zip')">
+                    <div class="l-info">
+                        <span class="l-name"><span class="icon-legacy"></span>Классические</span>
+                        <span class="l-desc">Официальный Лаунчер, Legacy Launcher</span>
+                    </div>
+                    <div style="color: var(--text-muted)">›</div>
+                </div>
+
+                <div class="launcher-card danger" onclick="confirmDanger()">
+                    <div class="l-info">
+                        <span class="l-name">TLauncher <span class="danger-tag">Опасно</span></span>
+                        <span class="l-desc">Не рекомендуется к использованию</span>
+                    </div>
+                    <div style="color: var(--danger)">!</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-mrpack" class="stage">
+            <h2 style="margin-bottom: 1rem;">Идеальный выбор</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                Формат <b>.mrpack</b> автоматически установит все моды и настройки.<br>Просто перетащите файл в окно лаунчера.
+            </p>
+            
+            <a href="https://github.com/bUmmy1337/catshade-server/releases/download/technomagic_2.7.3/TechnoMagic.2.7.3.mrpack" class="download-btn" download>
+                Скачать .mrpack
+            </a>
+            
+            <br>
+            <div class="file-info">TechnoMagic_v2.7.3.mrpack</div>
+            <span class="back-link" onclick="reset()">← Назад</span>
+        </div>
+
+        <div id="step-zip" class="stage">
+            <h2 style="margin-bottom: 1rem;">Ручная установка</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                Вы скачиваете архив. Распакуйте содержимое папки <br>
+                <code>mods</code> и <code>config</code> в папку вашей игры.
+            </p>
+            
+            <a href="https://github.com/bUmmy1337/catshade-server/releases/download/technomagic_2.7.3/TechnoMagic.2.7.3.zip" class="download-btn" style="background: #4b5563;" download>
+                Скачать .zip
+            </a>
+
+            <br>
+            <div class="file-info">TechnoMagic_v2.7.3.zip</div>
+            <span class="back-link" onclick="reset()">← Назад</span>
+        </div>
+
+    </div>
+
+    <script>
+        function goToDownload(type) {
+            // Hide selection
+            document.getElementById('step-1').classList.remove('active');
+            
+            // Show specific download page
+            if (type === 'mrpack') {
+                document.getElementById('step-mrpack').classList.add('active');
+            } else {
+                document.getElementById('step-zip').classList.add('active');
+            }
+        }
+
+        function confirmDanger() {
+            const confirmed = confirm("Внимание! TLauncher известен уязвимостями, шпионским ПО и кражей аккаунтов. Мы настоятельно рекомендуем сменить лаунчер на Prism или Legacy.\n\nВы все равно хотите продолжить скачивание для него?");
+            if (confirmed) {
+                goToDownload('zip');
+            }
+        }
+
+        function reset() {
+            document.querySelectorAll('.stage').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-1').classList.add('active');
+        }
+    </script>
+</body>
+</html>
