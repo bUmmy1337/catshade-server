@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renaissance: Installation</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0f0f10;
+            --bg-light: #18181b;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-hover: rgba(255, 255, 255, 0.07);
+            --text-main: #f2f2f2;
+            --text-muted: #9ca3af;
+            --accent: #fbbf24;
+            --accent-glow: rgba(251, 191, 36, 0.4);
+            --danger: #f87171;
+            --danger-bg: rgba(127, 29, 29, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 50% 0%, #291e0a, var(--bg-dark) 60%);
+            overflow: hidden;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 580px;
+            padding: 2rem;
+            text-align: center;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.2));
+        }
+
+        p.subtitle { 
+            color: var(--text-muted); 
+            margin-bottom: 3rem; 
+            font-size: 0.95rem; 
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 300;
+            opacity: 0.7;
+        }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            stroke-width: 1.5;
+            stroke: currentColor;
+            fill: none;
+            transition: 0.3s;
+        }
+
+        /* Stages Logic */
+        .stage {
+            display: none;
+            opacity: 0; 
+            /* transform убран из дефолтного состояния, чтобы не мешать JS */
+        }
+        
+        .stage.active { 
+            display: block; 
+            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .launcher-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .launcher-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 1.2rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .launcher-card:hover {
+            background: var(--card-hover);
+            border-color: var(--accent);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.1);
+        }
+
+        .card-icon-box {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--accent);
+        }
+
+        .l-info { text-align: left; flex-grow: 1; }
+        .l-name { font-weight: 600; font-size: 1rem; display: block; color: var(--text-main); }
+        .l-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+        .arrow-icon { color: var(--text-muted); opacity: 0.5; transition: 0.2s; }
+        .launcher-card:hover .arrow-icon { opacity: 1; transform: translateX(3px); color: var(--accent); }
+
+        .launcher-card.danger { border-color: rgba(248, 113, 113, 0.2); }
+        .launcher-card.danger .card-icon-box { color: var(--danger); background: var(--danger-bg); }
+        .launcher-card.danger:hover {
+            border-color: var(--danger);
+            box-shadow: 0 0 20px rgba(248, 113, 113, 0.2);
+        }
+        .danger-tag {
+            color: var(--danger);
+            font-size: 0.6rem;
+            font-weight: 700;
+            border: 1px solid var(--danger);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: var(--text-main);
+            color: #000;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+        }
+        
+        .download-btn:hover { 
+            background: var(--accent);
+            box-shadow: 0 0 25px var(--accent-glow);
+            transform: translateY(-2px);
+        }
+        .download-btn svg { width: 20px; height: 20px; }
+
+        .file-info {
+            margin-top: 1.5rem;
+            font-family: 'Inter', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: rgba(0,0,0,0.3);
+            padding: 8px 14px;
+            border-radius: 6px;
+            display: inline-block;
+            border: 1px solid var(--card-border);
+        }
+
+        .back-link {
+            margin-top: 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .back-link:hover { color: var(--text-main); }
+        
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="header">
+            <h1>Renaissance</h1>
+            <p class="subtitle">Ver. 2.4 // CatShade</p>
+        </div>
+
+        <div id="step-1" class="stage active">
+            <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Выберите лаунчер</p>
+            
+            <div class="launcher-grid">
+                <div class="launcher-card" onclick="goToDownload('mrpack')">
+                    <div class="card-icon-box">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                        </svg>
+                    </div>
+                    <div class="l-info">
+                        <span class="l-name">Современные</span>
+                        <span class="l-desc">Prism, MultiMC, Fjord</span>
+                    </div>
+                    <div class="arrow-icon">
+                        <svg class="icon" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                    </div>
+                </div>
+
+                <div class="launcher-card" onclick="goToDownload('zip')">
+                    <div class="card-icon-box" style="color: var(--text-muted)">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                        </svg>
+                    </div>
+                    <div class="l-info">
+                        <span class="l-name">Классические</span>
+                        <span class="l-desc">Legacy Launcher, Official</span>
+                    </div>
+                    <div class="arrow-icon">
+                        <svg class="icon" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                    </div>
+                </div>
+
+                <div class="launcher-card danger" onclick="confirmDanger()">
+                    <div class="card-icon-box">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                        </svg>
+                    </div>
+                    <div class="l-info">
+                        <span class="l-name">TLauncher <span class="danger-tag">Risk</span></span>
+                        <span class="l-desc">Уязвимость системы</span>
+                    </div>
+                    <div class="arrow-icon" style="color: var(--danger)">
+                        <svg class="icon" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-mrpack" class="stage">
+            <h2 style="margin-bottom: 1rem;">Авто-установка</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem; line-height: 1.6;">
+                Формат <b>.mrpack</b> автоматически развернет все ресурсы.<br>Просто перетащите файл в окно лаунчера.
+            </p>
+            
+            <a href="files/renaissance.mrpack" class="download-btn" download>
+                <svg class="icon" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                Скачать .mrpack
+            </a>
+            <br>
+            <div class="file-info">Renaissance_Full.mrpack</div>
+            <br>
+            <span class="back-link" onclick="reset()">
+                <svg class="icon" style="width:16px; height:16px;" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
+                Вернуться
+            </span>
+        </div>
+
+        <div id="step-zip" class="stage">
+            <h2 style="margin-bottom: 1rem;">Ручная сборка</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem; line-height: 1.6;">
+                Классический метод. Распакуйте архив и переместите<br>
+                <code>mods</code> и <code>config</code> в директорию игры.
+            </p>
+            
+            <a href="files/renaissance.zip" class="download-btn" style="background: #3f3f46; color: white;" download>
+                <svg class="icon" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                Скачать .zip
+            </a>
+            <br>
+            <div class="file-info">Renaissance_Manual.zip</div>
+            <br>
+            <span class="back-link" onclick="reset()">
+                <svg class="icon" style="width:16px; height:16px;" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
+                Вернуться
+            </span>
+        </div>
+
+    </div>
+
+    <script>
+        // Функция переключения ВПЕРЕД
+        function goToDownload(type) {
+            const step1 = document.getElementById('step-1');
+            
+            // Запускаем ручную анимацию скрытия
+            step1.style.transition = "opacity 0.3s, transform 0.3s";
+            step1.style.opacity = '0';
+            step1.style.transform = 'translateY(-10px)';
+            
+            setTimeout(() => {
+                step1.classList.remove('active');
+                // ВАЖНО: Сбрасываем инлайновые стили, чтобы они не мешали потом
+                step1.style = '';
+                
+                let nextStep;
+                if (type === 'mrpack') {
+                    nextStep = document.getElementById('step-mrpack');
+                } else {
+                    nextStep = document.getElementById('step-zip');
+                }
+                
+                // Гарантируем, что на следующем шаге нет старых стилей скрытия
+                nextStep.style = '';
+                nextStep.classList.add('active');
+            }, 300);
+        }
+
+        // Функция подтверждения
+        function confirmDanger() {
+            const confirmed = confirm("⚠️ Обнаружен риск безопасности.\n\nTLauncher имеет историю проблем с конфиденциальностью данных. Рекомендуется использовать Prism Launcher для чистого опыта.\n\nПродолжить загрузку ZIP для TLauncher?");
+            if (confirmed) {
+                goToDownload('zip');
+            }
+        }
+
+        // Функция переключения НАЗАД
+        function reset() {
+            // Находим текущий активный слайд
+            const current = document.querySelector('.stage.active');
+            
+            if (current) {
+                // Анимация скрытия текущего слайда
+                current.style.transition = "opacity 0.3s, transform 0.3s";
+                current.style.opacity = '0';
+                current.style.transform = 'translateY(10px)'; // Уходит вниз
+                
+                setTimeout(() => {
+                    current.classList.remove('active');
+                    current.style = ''; // ЧИСТИМ СТИЛИ
+                    
+                    const step1 = document.getElementById('step-1');
+                    // Чистим стили шага 1 перед показом
+                    step1.style = '';
+                    step1.classList.add('active');
+                }, 300);
+            } else {
+                // Fallback (если вдруг ничего не активно)
+                document.getElementById('step-1').classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
