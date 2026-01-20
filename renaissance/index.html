@@ -7,384 +7,491 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-dark: #0f0f10;
-            --bg-light: #18181b;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --card-hover: rgba(255, 255, 255, 0.07);
-            --text-main: #f2f2f2;
-            --text-muted: #9ca3af;
-            --accent: #fbbf24;
-            --accent-glow: rgba(251, 191, 36, 0.4);
-            --danger: #f87171;
-            --danger-bg: rgba(127, 29, 29, 0.2);
+            --bg-core: #050505;
+            --accent: #ffd700; /* Золото */
+            --accent-dim: rgba(255, 215, 0, 0.15);
+            --text-main: #ffffff;
+            --text-sec: #a1a1aa;
+            --card-bg: rgba(20, 20, 23, 0.6);
+            --card-border: rgba(255, 255, 255, 0.05);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.3);
+            
+            --anim-speed: 0.4s;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background-color: var(--bg-dark);
+            background-color: var(--bg-core);
             color: var(--text-main);
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at 50% 0%, #291e0a, var(--bg-dark) 60%);
             overflow: hidden;
+            perspective: 1000px;
         }
 
-        body::after {
-            content: '';
-            position: absolute;
+        /* Анимированный фон */
+        .bg-ambient {
+            position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: -1;
-            mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
-            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+            z-index: -2;
+            background: radial-gradient(circle at 50% -20%, #2a1f05, #000 70%);
         }
+        
+        .particles {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+            animation: moveBg 60s linear infinite;
+        }
+
+        @keyframes moveBg { from { transform: translateY(0); } to { transform: translateY(-50%); } }
 
         .container {
             width: 100%;
-            max-width: 580px;
+            max-width: 500px;
             padding: 2rem;
             text-align: center;
             z-index: 10;
+            position: relative;
         }
 
+        /* Typography */
         h1 {
             font-family: 'Cinzel', serif;
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 700;
-            letter-spacing: 2px;
-            background: linear-gradient(to right, #fff, var(--accent));
+            background: linear-gradient(180deg, #fff, #bf953f);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-            filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.2));
+            margin-bottom: 0.2rem;
+            text-shadow: 0 10px 30px rgba(191, 149, 63, 0.2);
         }
 
-        p.subtitle { 
-            color: var(--text-muted); 
-            margin-bottom: 3rem; 
-            font-size: 0.95rem; 
-            letter-spacing: 4px;
+        .subtitle { 
+            color: var(--text-sec); 
+            font-size: 0.85rem; 
+            letter-spacing: 6px;
             text-transform: uppercase;
-            font-weight: 300;
-            opacity: 0.7;
+            margin-bottom: 2.5rem;
+            opacity: 0.6;
         }
 
         h2 {
             font-family: 'Cinzel', serif;
-            font-weight: 600;
-            color: var(--text-main);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
         }
 
-        .icon {
-            width: 24px;
-            height: 24px;
-            stroke-width: 1.5;
-            stroke: currentColor;
-            fill: none;
+        /* Cards & Interactive Elements */
+        .grid-options {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 1.25rem;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px) scale(1.02);
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        .card:hover::before { transform: translateX(100%); }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            color: var(--accent);
+            flex-shrink: 0;
             transition: 0.3s;
         }
+        
+        .card:hover .card-icon {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .card-content { flex-grow: 1; }
+        .card-title { font-weight: 600; font-size: 1rem; display: block; margin-bottom: 4px; color: #fff; }
+        .card-desc { font-size: 0.8rem; color: var(--text-sec); line-height: 1.3; }
+
+        .danger-tag {
+            color: var(--danger);
+            border: 1px solid var(--danger-glow);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        /* Trailer Button */
+        .trailer-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            margin-bottom: 2rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50px;
+            color: #fff;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        .trailer-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--accent);
+        }
+        .trailer-icon { width: 16px; height: 16px; fill: currentColor; }
 
         /* Stages Logic */
         .stage {
             display: none;
-            opacity: 0; 
-            /* transform убран из дефолтного состояния, чтобы не мешать JS */
+            opacity: 0;
+            transform: scale(0.95);
         }
         
-        .stage.active { 
-            display: block; 
-            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .stage.active {
+            display: block;
+            animation: stageIn var(--anim-speed) cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes stageIn {
+            to { opacity: 1; transform: scale(1); }
         }
 
-        .launcher-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
+        /* Modal for Youtube */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            backdrop-filter: blur(5px);
         }
-
-        .launcher-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            padding: 1.2rem 1.5rem;
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        
+        .modal-content {
+            width: 90%;
+            max-width: 800px;
+            aspect-ratio: 16/9;
+            background: #000;
             border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            position: relative;
             overflow: hidden;
-        }
-
-        .launcher-card:hover {
-            background: var(--card-hover);
-            border-color: var(--accent);
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.1);
-        }
-
-        .card-icon-box {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            color: var(--accent);
-        }
-
-        .l-info { text-align: left; flex-grow: 1; }
-        .l-name { font-weight: 600; font-size: 1rem; display: block; color: var(--text-main); }
-        .l-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
-
-        .arrow-icon { color: var(--text-muted); opacity: 0.5; transition: 0.2s; }
-        .launcher-card:hover .arrow-icon { opacity: 1; transform: translateX(3px); color: var(--accent); }
-
-        .launcher-card.danger { border-color: rgba(248, 113, 113, 0.2); }
-        .launcher-card.danger .card-icon-box { color: var(--danger); background: var(--danger-bg); }
-        .launcher-card.danger:hover {
-            border-color: var(--danger);
-            box-shadow: 0 0 20px rgba(248, 113, 113, 0.2);
-        }
-        .danger-tag {
-            color: var(--danger);
-            font-size: 0.6rem;
-            font-weight: 700;
-            border: 1px solid var(--danger);
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .download-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background: var(--text-main);
-            color: #000;
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            margin-top: 2rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid transparent;
+            box-shadow: 0 0 50px rgba(191, 149, 63, 0.2);
+            position: relative;
         }
         
-        .download-btn:hover { 
-            background: var(--accent);
-            box-shadow: 0 0 25px var(--accent-glow);
-            transform: translateY(-2px);
-        }
-        .download-btn svg { width: 20px; height: 20px; }
-
-        .file-info {
-            margin-top: 1.5rem;
-            font-family: 'Inter', monospace;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            background: rgba(0,0,0,0.3);
-            padding: 8px 14px;
-            border-radius: 6px;
-            display: inline-block;
-            border: 1px solid var(--card-border);
+        .close-modal {
+            position: absolute;
+            top: -40px; right: 0;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
+        /* Navigation Buttons */
         .back-link {
             margin-top: 2rem;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            color: var(--text-muted);
+            color: var(--text-sec);
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             transition: 0.3s;
+            opacity: 0.7;
         }
-        .back-link:hover { color: var(--text-main); }
+        .back-link:hover { opacity: 1; color: var(--accent); }
+
+        .download-btn {
+            background: var(--text-main);
+            color: #000;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: 0.3s;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+        .download-btn:hover {
+            transform: scale(1.05);
+            background: var(--accent);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+        }
         
+        /* Utility */
+        svg { width: 24px; height: 24px; }
+        code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-family: monospace; }
     </style>
 </head>
 <body>
 
+    <div class="bg-ambient"></div>
+    <div class="particles"></div>
+
+    <div class="modal-overlay" id="trailerModal" onclick="closeTrailer(event)">
+        <div class="modal-content">
+            <div class="close-modal" onclick="closeTrailer(event)">Закрыть ✕</div>
+            <iframe id="yt-player" width="100%" height="100%" src="" title="Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
     <div class="container">
         <div id="header">
             <h1>Renaissance</h1>
-            <p class="subtitle">Ver. 2.4 // CatShade</p>
+            <p class="subtitle">Ver. 2.5-hotfix // CatShade</p>
         </div>
 
-        <div id="step-1" class="stage active">
-            <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Выберите лаунчер</p>
-            
-            <div class="launcher-grid">
-                <div class="launcher-card" onclick="goToDownload('mrpack')">
-                    <div class="card-icon-box">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-                        </svg>
+        <div id="step-start" class="stage active">
+            <button class="trailer-btn" onclick="openTrailer()">
+                <svg class="trailer-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                Смотреть трейлер
+            </button>
+            <br>
+            <div class="card" onclick="nextStage('step-hardware')">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16.5V22M12 2v6.5M7 12h10"/></svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-title">Начать установку</span>
+                    <span class="card-desc">Приготовьтесь выбрать конфигурацию</span>
+                </div>
+                <svg style="opacity: 0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+        </div>
+
+        <div id="step-hardware" class="stage">
+            <h2>Характеристики ПК</h2>
+            <div class="grid-options">
+                <div class="card" onclick="selectHardware('lite')">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     </div>
-                    <div class="l-info">
-                        <span class="l-name">Современные</span>
-                        <span class="l-desc">Prism, MultiMC, Fjord</span>
-                    </div>
-                    <div class="arrow-icon">
-                        <svg class="icon" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                    <div class="card-content">
+                        <span class="card-title">Оптимизация (Lite)</span>
+                        <span class="card-desc">Для ноутбуков и слабых ПК.<br>Высокий FPS, базовые шейдеры.</span>
                     </div>
                 </div>
 
-                <div class="launcher-card" onclick="goToDownload('zip')">
-                    <div class="card-icon-box" style="color: var(--text-muted)">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                        </svg>
+                <div class="card" onclick="selectHardware('ultra')">
+                    <div class="card-icon" style="color: #ffd700">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
                     </div>
-                    <div class="l-info">
-                        <span class="l-name">Классические</span>
-                        <span class="l-desc">Legacy Launcher, Official</span>
+                    <div class="card-content">
+                        <span class="card-title">Кинематография (Ultra)</span>
+                        <span class="card-desc">Для мощных систем.<br>Максимальная графика и эффекты.</span>
                     </div>
-                    <div class="arrow-icon">
-                        <svg class="icon" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                </div>
+            </div>
+            <div class="back-link" onclick="prevStage('step-start')">
+                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Назад
+            </div>
+        </div>
+
+        <div id="step-launcher" class="stage">
+            <h2>Выберите лаунчер</h2>
+            <div class="grid-options">
+                <div class="card" onclick="goToDownload('mrpack')">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title">Современные</span>
+                        <span class="card-desc">Prism, MultiMC, Modrinth</span>
                     </div>
                 </div>
 
-                <div class="launcher-card danger" onclick="confirmDanger()">
-                    <div class="card-icon-box">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                        </svg>
+                <div class="card" onclick="goToDownload('zip')">
+                    <div class="card-icon" style="color: var(--text-sec)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 8v13H3V8M1 3h22v5H1z"></path><path d="M10 12h4"></path></svg>
                     </div>
-                    <div class="l-info">
-                        <span class="l-name">TLauncher <span class="danger-tag">Risk</span></span>
-                        <span class="l-desc">Уязвимость системы</span>
-                    </div>
-                    <div class="arrow-icon" style="color: var(--danger)">
-                        <svg class="icon" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                    <div class="card-content">
+                        <span class="card-title">Классические</span>
+                        <span class="card-desc">Legacy, TLaun... (Official)</span>
                     </div>
                 </div>
+
+                <div class="card" style="border-color: rgba(239, 68, 68, 0.3);" onclick="confirmDanger()">
+                    <div class="card-icon" style="color: var(--danger); background: rgba(239, 68, 68, 0.1);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title">TLauncher <span class="danger-tag">Risk</span></span>
+                        <span class="card-desc">Потенциальная угроза безопасности</span>
+                    </div>
+                </div>
+            </div>
+            <div class="back-link" onclick="prevStage('step-hardware')">
+                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Назад
             </div>
         </div>
 
         <div id="step-mrpack" class="stage">
-            <h2 style="margin-bottom: 1rem;">Авто-установка</h2>
-            <p style="color: var(--text-muted); margin-bottom: 1rem; line-height: 1.6;">
-                Формат <b>.mrpack</b> автоматически развернет все ресурсы.<br>Просто перетащите файл в окно лаунчера.
+            <h2>Авто-установка</h2>
+            <p style="color: var(--text-sec); margin-bottom: 2rem; line-height: 1.6;">
+                Файл <b style="color:#fff">.mrpack</b> содержит конфигурацию <span id="hw-tag-mr" style="color:var(--accent)">Ultra</span>.<br>Перетащите файл в окно лаунчера.
             </p>
             
             <a href="https://github.com/bUmmy1337/catshade-server/releases/download/Renaissance/CatShade-.Renaissance.mrpack" class="download-btn" download>
-                <svg class="icon" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
                 Скачать .mrpack
             </a>
-            <br>
-            <div class="file-info">CatShade-Renaissance.mrpack</div>
-            <br>
-            <span class="back-link" onclick="reset()">
-                <svg class="icon" style="width:16px; height:16px;" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
-                Вернуться
-            </span>
+            <div style="margin-top: 2rem; font-size: 0.8rem; color: var(--text-sec);">CatShade-Renaissance.mrpack</div>
+            
+            <div class="back-link" onclick="prevStage('step-launcher')">
+                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Назад
+            </div>
         </div>
 
         <div id="step-zip" class="stage">
-            <h2 style="margin-bottom: 1rem;">Ручная сборка</h2>
-            <p style="color: var(--text-muted); margin-bottom: 1rem; line-height: 1.6;">
-                Классический метод. Распакуйте архив и переместите<br>
-                <code>mods</code> и <code>config</code> в директорию игры.
+            <h2>Ручная сборка</h2>
+            <p style="color: var(--text-sec); margin-bottom: 2rem; line-height: 1.6;">
+                Сборка подготовлена для <span id="hw-tag-zip" style="color:var(--accent)">Ultra</span> настроек.<br>Распакуйте содержимое в папку игры.
             </p>
             
-            <a href="https://github.com/bUmmy1337/catshade-server/releases/download/Renaissance/CatShade-.Renaissance.zip" class="download-btn" style="background: #3f3f46; color: white;" download>
-                <svg class="icon" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+            <a href="https://github.com/bUmmy1337/catshade-server/releases/download/Renaissance/CatShade-.Renaissance.zip" class="download-btn" style="background: #3f3f46; color: #fff;" download>
                 Скачать .zip
             </a>
-            <br>
-            <div class="file-info">CatShade-Renaissance.zip</div>
-            <br>
-            <span class="back-link" onclick="reset()">
-                <svg class="icon" style="width:16px; height:16px;" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
-                Вернуться
-            </span>
+            <div style="margin-top: 2rem; font-size: 0.8rem; color: var(--text-sec);">CatShade-Renaissance.zip</div>
+
+            <div class="back-link" onclick="prevStage('step-launcher')">
+                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Назад
+            </div>
         </div>
 
     </div>
 
     <script>
-        // Функция переключения ВПЕРЕД
-        function goToDownload(type) {
-            const step1 = document.getElementById('step-1');
+        let userConfig = {
+            hardware: 'ultra' // 'lite' or 'ultra'
+        };
+
+        // --- Navigation Logic ---
+
+        function switchStage(fromId, toId, direction) {
+            const current = document.getElementById(fromId);
+            const next = document.getElementById(toId);
             
-            // Запускаем ручную анимацию скрытия
-            step1.style.transition = "opacity 0.3s, transform 0.3s";
-            step1.style.opacity = '0';
-            step1.style.transform = 'translateY(-10px)';
+            // Out Animation
+            current.style.transition = "opacity 0.3s, transform 0.3s";
+            current.style.opacity = '0';
+            current.style.transform = direction === 'forward' ? 'translateX(-20px)' : 'translateX(20px)';
             
             setTimeout(() => {
-                step1.classList.remove('active');
-                // ВАЖНО: Сбрасываем инлайновые стили, чтобы они не мешали потом
-                step1.style = '';
+                current.classList.remove('active');
+                current.style = ''; // Reset inline styles
                 
-                let nextStep;
-                if (type === 'mrpack') {
-                    nextStep = document.getElementById('step-mrpack');
-                } else {
-                    nextStep = document.getElementById('step-zip');
-                }
-                
-                // Гарантируем, что на следующем шаге нет старых стилей скрытия
-                nextStep.style = '';
-                nextStep.classList.add('active');
+                next.classList.add('active');
+                // Ensure animation plays by forcing reflow if needed, though class change usually enough
             }, 300);
         }
 
-        // Функция подтверждения
+        function nextStage(targetId) {
+            const currentId = document.querySelector('.stage.active').id;
+            switchStage(currentId, targetId, 'forward');
+        }
+
+        function prevStage(targetId) {
+            const currentId = document.querySelector('.stage.active').id;
+            switchStage(currentId, targetId, 'back');
+        }
+
+        // --- Step Logic ---
+
+        function selectHardware(type) {
+            userConfig.hardware = type;
+            // Обновляем текст на финальных страницах для погружения
+            const label = type === 'lite' ? 'Lite Performance' : 'Cinematic Ultra';
+            document.getElementById('hw-tag-mr').textContent = label;
+            document.getElementById('hw-tag-zip').textContent = label;
+            
+            nextStage('step-launcher');
+        }
+
+        function goToDownload(type) {
+            if (type === 'mrpack') {
+                nextStage('step-mrpack');
+            } else {
+                nextStage('step-zip');
+            }
+        }
+
         function confirmDanger() {
-            const confirmed = confirm("⚠️ Обнаружен риск безопасности.\n\nTLauncher имеет историю проблем с конфиденциальностью данных. Рекомендуется использовать Prism Launcher для чистого опыта.\n\nПродолжить загрузку ZIP для TLauncher?");
+            const confirmed = confirm("⚠️ Внимание!\n\nTLauncher имеет сомнительную репутацию в сообществе (сбор данных, модификация кода). Для этой сборки настоятельно рекомендуется Prism Launcher.\n\nВсё равно скачать ZIP?");
             if (confirmed) {
                 goToDownload('zip');
             }
         }
 
-        // Функция переключения НАЗАД
-        function reset() {
-            // Находим текущий активный слайд
-            const current = document.querySelector('.stage.active');
-            
-            if (current) {
-                // Анимация скрытия текущего слайда
-                current.style.transition = "opacity 0.3s, transform 0.3s";
-                current.style.opacity = '0';
-                current.style.transform = 'translateY(10px)'; // Уходит вниз
-                
-                setTimeout(() => {
-                    current.classList.remove('active');
-                    current.style = ''; // ЧИСТИМ СТИЛИ
-                    
-                    const step1 = document.getElementById('step-1');
-                    // Чистим стили шага 1 перед показом
-                    step1.style = '';
-                    step1.classList.add('active');
-                }, 300);
-            } else {
-                // Fallback (если вдруг ничего не активно)
-                document.getElementById('step-1').classList.add('active');
+        // --- YouTube Modal Logic ---
+        
+        function openTrailer() {
+            const modal = document.getElementById('trailerModal');
+            const iframe = document.getElementById('yt-player');
+            // Autoplay enabled
+            iframe.src = "https://www.youtube.com/embed/y0eq2BhYHM0?autoplay=1&rel=0";
+            modal.classList.add('open');
+        }
+
+        function closeTrailer(e) {
+            // Close if clicked overlay or close button
+            if (e.target === document.getElementById('trailerModal') || e.target.classList.contains('close-modal')) {
+                const modal = document.getElementById('trailerModal');
+                const iframe = document.getElementById('yt-player');
+                modal.classList.remove('open');
+                setTimeout(() => { iframe.src = ""; }, 300); // Stop video
             }
         }
     </script>
