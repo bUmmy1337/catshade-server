@@ -385,10 +385,10 @@
                 Файл <b style="color:#fff">.mrpack</b> содержит конфигурацию <span id="hw-tag-mr" style="color:var(--accent)">Ultra</span>.<br>Перетащите файл в окно лаунчера.
             </p>
             
-            <a href="https://github.com/bUmmy1337/catshade-server/releases/download/Renaissance/CatShade-.Renaissance.mrpack" class="download-btn" download>
+            <a href="#" id="btn-mrpack" class="download-btn" download>
                 Скачать .mrpack
             </a>
-            <div style="margin-top: 2rem; font-size: 0.8rem; color: var(--text-sec);">CatShade-Renaissance.mrpack</div>
+            <div id="file-label-mr" style="margin-top: 2rem; font-size: 0.8rem; color: var(--text-sec);">Renaissance.2.5.0.mrpack</div>
             
             <div class="back-link" onclick="prevStage('step-launcher')">
                 <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Назад
@@ -401,10 +401,10 @@
                 Сборка подготовлена для <span id="hw-tag-zip" style="color:var(--accent)">Ultra</span> настроек.<br>Распакуйте содержимое в папку игры.
             </p>
             
-            <a href="https://github.com/bUmmy1337/catshade-server/releases/download/Renaissance/CatShade-.Renaissance.zip" class="download-btn" style="background: #3f3f46; color: #fff;" download>
+            <a href="#" id="btn-zip" class="download-btn" style="background: #3f3f46; color: #fff;" download>
                 Скачать .zip
             </a>
-            <div style="margin-top: 2rem; font-size: 0.8rem; color: var(--text-sec);">CatShade-Renaissance.zip</div>
+            <div id="file-label-zip" style="margin-top: 2rem; font-size: 0.8rem; color: var(--text-sec);">Renaissance.2.5.0.zip</div>
 
             <div class="back-link" onclick="prevStage('step-launcher')">
                 <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Назад
@@ -414,8 +414,24 @@
     </div>
 
     <script>
+        // База ссылок
+        const downloadLinks = {
+            lite: {
+                mrpack: "https://github.com/bUmmy1337/catshade-server/releases/download/renaissance-2.5.0-hotfix/Renaissance.2.5.0-LITE.mrpack",
+                zip: "https://github.com/bUmmy1337/catshade-server/releases/download/renaissance-2.5.0-hotfix/Renaissance.2.5.0-LITE.zip",
+                fileNameMr: "Renaissance.2.5.0-LITE.mrpack",
+                fileNameZip: "Renaissance.2.5.0-LITE.zip"
+            },
+            ultra: {
+                mrpack: "https://github.com/bUmmy1337/catshade-server/releases/download/renaissance-2.5.0-hotfix/Renaissance.2.5.0.mrpack",
+                zip: "https://github.com/bUmmy1337/catshade-server/releases/download/renaissance-2.5.0-hotfix/Renaissance.2.5.0.zip",
+                fileNameMr: "Renaissance.2.5.0.mrpack",
+                fileNameZip: "Renaissance.2.5.0.zip"
+            }
+        };
+
         let userConfig = {
-            hardware: 'ultra' // 'lite' or 'ultra'
+            hardware: 'ultra'
         };
 
         // --- Navigation Logic ---
@@ -424,17 +440,15 @@
             const current = document.getElementById(fromId);
             const next = document.getElementById(toId);
             
-            // Out Animation
             current.style.transition = "opacity 0.3s, transform 0.3s";
             current.style.opacity = '0';
             current.style.transform = direction === 'forward' ? 'translateX(-20px)' : 'translateX(20px)';
             
             setTimeout(() => {
                 current.classList.remove('active');
-                current.style = ''; // Reset inline styles
+                current.style = ''; 
                 
                 next.classList.add('active');
-                // Ensure animation plays by forcing reflow if needed, though class change usually enough
             }, 300);
         }
 
@@ -452,10 +466,20 @@
 
         function selectHardware(type) {
             userConfig.hardware = type;
-            // Обновляем текст на финальных страницах для погружения
-            const label = type === 'lite' ? 'Lite Performance' : 'Cinematic Ultra';
-            document.getElementById('hw-tag-mr').textContent = label;
-            document.getElementById('hw-tag-zip').textContent = label;
+            
+            // 1. Обновляем текстовые метки (Lite / Ultra)
+            const labelText = type === 'lite' ? 'Lite Performance' : 'Cinematic Ultra';
+            document.getElementById('hw-tag-mr').textContent = labelText;
+            document.getElementById('hw-tag-zip').textContent = labelText;
+
+            // 2. Подставляем ссылки в кнопки скачивания
+            const links = downloadLinks[type];
+            document.getElementById('btn-mrpack').href = links.mrpack;
+            document.getElementById('btn-zip').href = links.zip;
+
+            // 3. Обновляем названия файлов внизу
+            document.getElementById('file-label-mr').textContent = links.fileNameMr;
+            document.getElementById('file-label-zip').textContent = links.fileNameZip;
             
             nextStage('step-launcher');
         }
@@ -480,18 +504,16 @@
         function openTrailer() {
             const modal = document.getElementById('trailerModal');
             const iframe = document.getElementById('yt-player');
-            // Autoplay enabled
             iframe.src = "https://www.youtube.com/embed/y0eq2BhYHM0?autoplay=1&rel=0";
             modal.classList.add('open');
         }
 
         function closeTrailer(e) {
-            // Close if clicked overlay or close button
             if (e.target === document.getElementById('trailerModal') || e.target.classList.contains('close-modal')) {
                 const modal = document.getElementById('trailerModal');
                 const iframe = document.getElementById('yt-player');
                 modal.classList.remove('open');
-                setTimeout(() => { iframe.src = ""; }, 300); // Stop video
+                setTimeout(() => { iframe.src = ""; }, 300);
             }
         }
     </script>
