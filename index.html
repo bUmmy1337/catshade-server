@@ -1,268 +1,191 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CATSHADE Realm - Сервер Minecraft</title>
+    <title>CATSHADE Realm</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Unbounded:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --s-light: #F8F9FA;
-            --s-dark: #212529;
-            --s-accent: #e0b98d; /* Warm beige */
-            --s-accent-dark: #c29a6e; /* Darker beige for hover */
-            --s-gray: #6c757d;
+            /* Нейтральная темная палитра, подходящая под любую тематику */
+            --bg-main: #09090b; /* Zinc-950 */
+            --bg-secondary: #18181b; /* Zinc-900 */
+            --accent: #e4e4e7; /* Zinc-200 (белый акцент) */
+            --highlight: #fbbf24; /* Amber-400 (золотой/ламповый акцент для кнопок) */
+            
+            --text-primary: #f4f4f5;
+            --text-muted: #a1a1aa;
         }
 
         body {
-            background-color: var(--s-light);
-            color: var(--s-dark);
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            letter-spacing: 0.5px;
-            scroll-behavior: smooth;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
-        
-        .font-unbounded {
+
+        h1, h2, h3, .font-heading {
             font-family: 'Unbounded', sans-serif;
         }
 
-        /* --- Стили для анимации появления --- */
-        .section-title,
-        .step-card, .rule-item, .about-content, .hero-text > *, .hero-image, .footer-content, .apply-content > * {
+        /* Тонкие фоновые паттерны вместо конкретных картинок */
+        .bg-grid-pattern {
+            background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+        }
+
+        /* Glass Cards - универсальные контейнеры */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* Кнопка с мягким свечением */
+        .btn-glow {
+            background: var(--text-primary);
+            color: #000;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-glow:hover {
+            background: #fff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        /* Анимация появления */
+        .fade-up {
             opacity: 0;
             transform: translateY(20px);
-            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
         
-        .arrow-container {
-            opacity: 0;
-            transition: opacity 1.5s ease-in 0.5s;
-        }
-
-        .arrow-path {
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            animation: draw 2s ease-in-out forwards;
-        }
-
-        .visible .section-title,
-        .visible .step-card,
-        .visible .rule-item,
-        .visible .about-content,
-        .visible .hero-text > *,
-        .visible .hero-image,
-        .visible .footer-content,
-        .visible .apply-content > *,
-        .visible .arrow-container {
+        .fade-up.visible {
             opacity: 1;
             transform: translateY(0);
-        }
-        
-        /* Задержки для последовательной анимации */
-        .hero-text > *:nth-child(1) { transition-delay: 0.1s; }
-        .hero-text > *:nth-child(2) { transition-delay: 0.3s; }
-        .hero-text > *:nth-child(3) { transition-delay: 0.5s; }
-        .hero-image { transition-delay: 0.4s; }
-
-        .apply-content > *:nth-child(2) { transition-delay: 0.2s; }
-        .apply-content > *:nth-child(3) { transition-delay: 0.4s; }
-
-        .step-card:nth-child(1) { transition-delay: 0.2s; }
-        .step-card:nth-child(3) { transition-delay: 0.8s; } /* Card 2 */
-        .step-card:nth-child(5) { transition-delay: 1.4s; } /* Card 3 */
-        .step-card:nth-child(7) { transition-delay: 2.0s; } /* Card 4 */
-        
-        .arrow-container:nth-of-type(1) .arrow-path { animation-delay: 0.5s; }
-        .arrow-container:nth-of-type(2) .arrow-path { animation-delay: 1.1s; }
-        .arrow-container:nth-of-type(3) .arrow-path { animation-delay: 1.7s; }
-
-        @keyframes draw {
-            to {
-                stroke-dashoffset: 0;
-            }
-        }
-        
-        /* --- Улучшенные стили кнопок --- */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem 2rem; /* px-8 py-4 */
-            border-radius: 9999px; /* rounded-full */
-            font-family: 'Unbounded', sans-serif;
-            font-size: 0.875rem; /* text-sm */
-            text-transform: uppercase;
-            letter-spacing: 0.05em; /* tracking-wider */
-            transition: all 0.3s ease-in-out;
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(66, 153, 225, 0); /* focus:ring-4 focus:ring-blue-300 */
-        }
-
-        .btn-primary {
-            color: white;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
-            background-image: linear-gradient(to right, var(--s-accent-dark) 0%, var(--s-accent) 51%, var(--s-accent-dark) 100%);
-            background-size: 200% auto;
-            border: none;
-        }
-        
-        .btn-primary:hover {
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-xl */
-            transform: translateY(-3px);
-            background-position: right center;
-        }
-
-        .btn-primary:active {
-            box-shadow: 0 5px 10px -2px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
-            transform: translateY(-1px) scale(0.98);
-            background-position: left center;
-        }
-        
-        header.scrolled {
-            @apply bg-white/80 backdrop-blur-sm shadow-md;
         }
     </style>
 </head>
 <body class="antialiased">
 
-    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <div class="text-2xl font-bold font-unbounded">CATSHADE</div>
-                <nav class="hidden md:flex space-x-8 text-sm uppercase tracking-widest">
-                    <a href="#about" class="hover:text-s-accent transition-colors">О сервере</a>
-                    <a href="#get-started-full" class="hover:text-s-accent transition-colors">Как начать</a>
-                    <a href="#rules" class="hover:text-s-accent transition-colors">Правила</a>
-                    <a href="http://srv.catshade.ru:19173/" class="hover:text-s-accent transition-colors" target="_blank" rel="noopener noreferrer">Сообщество</a>
-                </nav>
-            </div>
+    <div class="fixed inset-0 z-[-1] bg-grid-pattern opacity-50"></div>
+    <div class="fixed top-0 left-0 w-full h-full z-[-2] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800/20 via-zinc-950 to-zinc-950"></div>
+
+    <header class="fixed top-0 w-full z-50 border-b border-white/5 bg-black/50 backdrop-blur-md transition-all duration-300">
+        <div class="container mx-auto px-6 h-20 flex justify-between items-center">
+            <a href="#" class="text-xl font-heading font-bold tracking-tight text-white hover:opacity-80 transition">
+                CATSHADE
+            </a>
+            
+            <nav class="hidden md:flex gap-8 text-sm font-medium text-zinc-400">
+                <a href="#features" class="hover:text-white transition-colors">О сервере</a>
+                <a href="#gallery" class="hover:text-white transition-colors">Галерея</a>
+                <a href="#join" class="hover:text-white transition-colors">Начать играть</a>
+                <a href="https://don.catshade.ru/" target="_blank" class="hover:text-white transition-colors">Поддержать</a>
+            </nav>
+
+            <a href="#join" class="hidden md:inline-flex px-5 py-2 rounded-full border border-white/20 text-xs font-heading font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all">
+                IP: mc.catshade.ru
+            </a>
         </div>
     </header>
 
     <main>
-        <section id="hero" class="min-h-screen flex items-center py-20 animated-section">
+        <section class="min-h-screen flex items-center justify-center relative pt-20">
+            <div class="container mx-auto px-6 text-center z-10">
+                
+                <div class="fade-up inline-block mb-6 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-zinc-400">
+                    ● Season 4: Active
+                </div>
+
+                <h1 class="fade-up delay-100 text-5xl md:text-7xl lg:text-8xl font-heading font-bold tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500">
+                    ТВОЙ МИР.<br>ТВОЯ ИСТОРИЯ.
+                </h1>
+                
+                <p class="fade-up delay-200 text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    Уютный сервер с акцентом на сообщество, атмосферу и новые механики. 
+                    Никакого доната, влияющего на баланс. Только чистый геймплей.
+                </p>
+
+                <div class="fade-up delay-300 flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="installation.html" class="btn-glow px-8 py-4 rounded-xl text-sm font-heading uppercase tracking-wide">
+                        Установить сборку
+                    </a>
+                    <a href="#features" class="px-8 py-4 rounded-xl border border-white/10 text-zinc-300 hover:bg-white/5 transition text-sm font-heading uppercase tracking-wide">
+                        Узнать больше
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="py-24 bg-zinc-950/50">
             <div class="container mx-auto px-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                    <!-- Левая колонка: Текст -->
-                    <div class="hero-text text-center md:text-left">
-                        <h1 class="text-5xl md:text-7xl font-unbounded font-bold leading-tight mb-4">
-                            Твой идеальный мир.
-                        </h1>
-                        <p class="text-lg md:text-xl text-s-gray max-w-xl mx-auto md:mx-0 mb-8">
-                            CATSHADE — это Minecraft сервер для тех, кто ценит выживание, дружное сообщество и уважение к чужому труду. Присоединяйся к нам и начни свое приключение!
+                <div class="grid md:grid-cols-3 gap-6">
+                    
+                    <div class="glass-panel p-8 rounded-2xl fade-up">
+                        <div class="w-12 h-12 bg-zinc-800 rounded-lg flex items-center justify-center mb-6 text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-heading font-bold mb-3">Сообщество</h3>
+                        <p class="text-sm text-zinc-400 leading-relaxed">
+                            Мы строим города, проводим ивенты и общаемся в голосовом чате. Адекватные игроки и отсутствие приватов создают атмосферу доверия.
                         </p>
-                        <a href="#get-started-full" class="btn btn-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd" />
-                            </svg>
-                            Начать игру
-                        </a>
                     </div>
-                    <!-- Правая колонка: Плейсхолдер для картинки -->
-                    <div class="hero-image flex justify-center items-center">
-                        <img src="bummy.png" alt="Minecraft character placeholder" class="rounded-xl shadow-lg w-full max-w-sm">
+
+                    <div class="glass-panel p-8 rounded-2xl fade-up delay-100">
+                        <div class="w-12 h-12 bg-zinc-800 rounded-lg flex items-center justify-center mb-6 text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
+                        </div>
+                        <h3 class="text-xl font-heading font-bold mb-3">Новые механики</h3>
+                        <p class="text-sm text-zinc-400 leading-relaxed">
+                            Сервер работает на модифицированном ядре. Это открывает возможности, недоступные в ванильной игре: от новых биомов до сложной инженерии.
+                        </p>
                     </div>
+
+                    <div class="glass-panel p-8 rounded-2xl fade-up delay-200">
+                        <div class="w-12 h-12 bg-zinc-800 rounded-lg flex items-center justify-center mb-6 text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <h3 class="text-xl font-heading font-bold mb-3">Честная игра</h3>
+                        <p class="text-sm text-zinc-400 leading-relaxed">
+                            Строгие правила против гриферов и читеров. Мощное оборудование обеспечивает стабильный TPS даже при сложных постройках.
+                        </p>
+                    </div>
+
                 </div>
             </div>
         </section>
 
-        <section id="about" class="py-20 md:py-32 animated-section">
-            <div class="container mx-auto px-6">
-                <h2 class="section-title text-center text-4xl font-unbounded font-bold mb-12">Что такое CATSHADE?</h2>
-                <div class="about-content max-w-4xl mx-auto text-center text-s-gray text-base md:text-lg leading-relaxed space-y-4">
-                    <p>
-                        Мы создали этот сервер с одной целью — собрать вместе зрелых и адекватных игроков, которые хотят наслаждаться Minecraft без плагинов на телепортацию и приватов. У нас нет доната, влияющего на игру.
+        <section id="join" class="py-32 relative overflow-hidden">
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="glass-panel max-w-4xl mx-auto p-12 md:p-16 rounded-[2rem] text-center border-white/10 fade-up">
+                    <h2 class="text-3xl md:text-5xl font-heading font-bold mb-6">Готов начать?</h2>
+                    <p class="text-zinc-400 text-lg mb-10 max-w-xl mx-auto">
+                        Для входа на сервер требуется специальный клиент. Мы сделали процесс установки максимально простым.
                     </p>
-                    <p>
-                        CATSHADE открыт для всех желающих! Присоединяйся к нашему сплоченному сообществу, где каждый уважает друг друга. Мы строим, творим и выживаем вместе. Добро пожаловать!
-                    </p>
-                </div>
-            </div>
-        </section>
-
-    <section id="get-started-full" class="py-20 md:py-32 bg-white animated-section">
-        <div class="container mx-auto px-6">
-            <h2 class="section-title text-center text-4xl font-unbounded font-bold mb-12">Как начать играть на CATSHADE</h2>
-            <div class="max-w-4xl mx-auto text-s-gray text-base md:text-lg leading-relaxed space-y-6">
-                <div class="step-card p-6 border-l-4 border-s-accent bg-white rounded-r-lg shadow-sm">
-                    <h3 class="font-unbounded font-bold text-xl mb-2 text-s-dark">Шаг 1: Установите Minecraft Java Edition</h3>
-                    <p>Убедитесь, что у вас установлена официальная версия Minecraft Java Edition. Наш сервер работает на версии 1.20.1.</p>
-                </div>
-                <div class="step-card p-6 border-l-4 border-s-accent bg-white rounded-r-lg shadow-sm">
-                    <h3 class="font-unbounded font-bold text-xl mb-2 text-s-dark">Шаг 2: Установите текущую сборку сервера</h3>
-                    <p>Она доступна <a href="https://catshade.ru/technomagic/" class="text-s-accent hover:underline" target="_blank" rel="noopener noreferrer">Здесь</a>.</p>
-                </div>
-                <div class="step-card p-6 border-l-4 border-s-accent bg-white rounded-r-lg shadow-sm">
-                    <h3 class="font-unbounded font-bold text-xl mb-2 text-s-dark">Шаг 3: Добавьте сервер в список</h3>
-                    <p>Откройте Minecraft, перейдите в раздел "Сетевая игра" и нажмите "Добавить сервер".</p>
-                    <p class="mt-2">В поле "Адрес сервера" введите: <code class="bg-gray-200 p-1 rounded">catshade.ru</code></p>
-                    <p class="mt-2">Нажмите "Готово".</p>
-                </div>
-                <div class="step-card p-6 border-l-4 border-s-accent bg-white rounded-r-lg shadow-sm">
-                    <h3 class="font-unbounded font-bold text-xl mb-2 text-s-dark">Шаг 4: Присоединяйтесь к игре!</h3>
-                    <p>Выберите CATSHADE Realm из списка серверов и нажмите "Подключиться". Добро пожаловать в наш мир!</p>
-                    <p class="mt-2">Если у вас возникнут вопросы, посетите наш раздел <a href="http://srv.catshade.ru:19173/" class="text-s-accent hover:underline" target="_blank" rel="noopener noreferrer">Сообщество</a>.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-
-        <section id="rules" class="py-20 md:py-32 animated-section">
-            <div class="container mx-auto px-6">
-                <h2 class="section-title text-center text-4xl font-unbounded font-bold mb-12">Основные правила</h2>
-                <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="rule-item p-6 border-l-4 border-s-accent bg-white rounded-r-lg">
-                        <h3 class="font-unbounded font-bold text-lg mb-2">Уважение</h3>
-                        <p class="text-s-gray">Относитесь с уважением ко всем игрокам, их времени и постройкам. Оскорбления и токсичное поведение запрещены.</p>
-                    </div>
-                    <div class="rule-item p-6 border-l-4 border-s-accent bg-white rounded-r-lg">
-                        <h3 class="font-unbounded font-bold text-lg mb-2">Без грифинга</h3>
-                        <p class="text-s-gray">Разрушение или изменение чужих построек без разрешения строго запрещено и карается перманентным баном.</p>
-                    </div>
-                    <div class="rule-item p-6 border-l-4 border-s-accent bg-white rounded-r-lg">
-                        <h3 class="font-unbounded font-bold text-lg mb-2">Без читов</h3>
-                        <p class="text-s-gray">Использование читов, X-Ray и любых модификаций, дающих нечестное преимущество, запрещено.</p>
-                    </div>
-                    <div class="rule-item p-6 border-l-4 border-s-accent bg-white rounded-r-lg">
-                        <h3 class="font-unbounded font-bold text-lg mb-2">Здравый смысл</h3>
-                        <p class="text-s-gray">Правила не могут описать все ситуации. Поступайте так, как хотели бы, чтобы поступали с вами.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-<section class="py-20 md:py-32 bg-gray-100 animated-section">
-  <div class="container mx-auto px-6 text-center">
-    <h2 class="section-title text-4xl font-unbounded font-bold mb-6">Как начать: Видео-инструкция</h2>
-    <div class="max-w-3xl mx-auto rounded-xl overflow-hidden shadow-xl">
-      <div class="relative" style="padding-top: 56.25%;">
-        <iframe class="absolute top-0 left-0 w-full h-full rounded-xl"
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
-                title="Как начать играть на Catshade Realm"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen>
-        </iframe>
-      </div>
-    </div>
-  </div>
-</section>
-        <section id="apply" class="py-20 md:py-32 bg-white animated-section">
-            <div class="container mx-auto px-6 text-center">
-                 <div class="apply-content">
-                    <h2 class="section-title text-4xl font-unbounded font-bold mb-6">Присоединяйтесь к CATSHADE!</h2>
-                    <p class="text-lg text-s-gray max-w-2xl mx-auto mb-8">
-                       Мы всегда рады новым игрокам. Начните свое приключение прямо сейчас!
-                    </p>
-                    <a href="#get-started-full" class="btn btn-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd" />
-                        </svg>
-                        Начать игру
+                    
+                    <a href="installation.html" class="inline-flex items-center justify-center gap-3 bg-white text-black px-10 py-5 rounded-full text-lg font-heading font-bold hover:scale-105 transition-transform duration-300">
+                        <span>Перейти к установке</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                     </a>
                 </div>
             </div>
@@ -270,60 +193,38 @@
 
     </main>
 
-    <footer class="py-10 bg-gray-800 text-gray-400 animated-section">
-        <div class="container mx-auto px-6 text-center">
-           <div class="footer-content">
-                <p>&copy; 2025 CATSHADE. Все права защищены.</p>
-                <p class="text-sm mt-2">Этот сервер не связан с Mojang Studios.</p>
+    <footer class="py-12 border-t border-white/5 bg-zinc-950">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-center md:text-left">
+                <div class="text-xl font-heading font-bold text-white mb-2">CATSHADE</div>
+                <p class="text-xs text-zinc-500">© 2026. Not affiliated with Mojang Studios.</p>
+            </div>
+            
+            <div class="flex gap-6 text-sm text-zinc-400">
+                <a href="https://t.me/catshaded" class="hover:text-white transition">Telegram</a>
+                <a href="https://t.me/catshaded?direct" class="hover:text-white transition">Поддержка</a>
+                <a href="https://docs.google.com/document/d/1zMxogGbjlMzSYOwIlkgy0nlhJNDDypMiovKaXfM468U/edit?tab=t.0" class="hover:text-white transition">Правила</a>
             </div>
         </div>
     </footer>
 
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        // Простой скрипт для анимации появления при скролле
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px"
+        };
 
-            // --- Sticky Header ---
-            const header = document.querySelector('header');
-            const onScroll = () => {
-                if (window.scrollY > 50) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
                 }
-            };
-            window.addEventListener('scroll', onScroll, { passive: true });
-
-            // --- Animate on Scroll ---
-            const animatedSections = document.querySelectorAll('.animated-section');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, {
-                rootMargin: '0px',
-                threshold: 0.2
             });
+        }, observerOptions);
 
-            animatedSections.forEach(section => {
-                observer.observe(section);
-            });
-            
-            // --- Smooth scrolling for nav links ---
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                });
-            });
-
-        });
+        document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
     </script>
 </body>
 </html>
