@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CatShade Server — Status Monitor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: #141414;
+            --border-color: #2a2a2a;
+            --border-hover: #3a3a3a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #606060;
+            --accent: #ffffff;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .server-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.online {
+            background: var(--success);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+
+        .status-dot.offline {
+            background: var(--error);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+        }
+
+        .col-4 { grid-column: span 4; }
+        .col-6 { grid-column: span 6; }
+        .col-8 { grid-column: span 8; }
+        .col-12 { grid-column: span 12; }
+
+        @media (max-width: 900px) {
+            .col-4, .col-6, .col-8 { grid-column: span 12; }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            transition: border-color 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+        }
+
+        .card-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.4;
+        }
+
+        .server-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .server-address {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .copy-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .copy-btn:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .stat-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-value.small {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .players-list {
+            margin-top: 16px;
+        }
+
+        .players-header {
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .player-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .player-item:last-child {
+            border-bottom: none;
+        }
+
+        .player-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+        }
+
+        .player-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .no-players {
+            color: var(--text-muted);
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .current-build {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+        }
+
+        .build-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .build-version {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .build-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .build-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .build-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(255,255,255,0.2);
+        }
+
+        .github-stats {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+
+        .github-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .github-stat svg {
+            width: 16px;
+            height: 16px;
+            opacity: 0.6;
+        }
+
+        .repo-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 10px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .repo-link:hover {
+            border-color: var(--text-muted);
+            background: var(--bg-secondary);
+        }
+
+        .releases-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .releases-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .releases-list::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 3px;
+        }
+
+        .releases-list::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .release-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.2s;
+        }
+
+        .release-item:hover {
+            border-color: var(--border-hover);
+        }
+
+        .release-item.latest {
+            border-color: var(--text-muted);
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(255,255,255,0.03) 100%);
+        }
+
+        .release-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .release-info {
+            flex: 1;
+        }
+
+        .release-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .release-name {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .release-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .release-badges {
+            display: flex;
+            gap: 8px;
+        }
+
+        .release-badge {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border-radius: 4px;
+        }
+
+        .release-badge.prerelease {
+            background: var(--warning);
+        }
+
+        .release-badge.current {
+            background: var(--success);
+        }
+
+        .release-assets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .asset-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.2s;
+        }
+
+        .asset-link:hover {
+            border-color: var(--text-muted);
+            color: var(--text-primary);
+        }
+
+        .asset-link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .asset-size {
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--text-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            padding: 20px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            color: var(--error);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: var(--text-primary);
+        }
+
+        .last-updated {
+            margin-top: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+        }
+
+        .motd {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 16px;
+            }
+            
+            .header {
+                margin-bottom: 40px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .github-stats {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">Minecraft Server</div>
+            <h1>CatShade</h1>
+            <p class="header-subtitle">Server Status & Downloads</p>
+            <div class="server-status-badge" id="headerStatus">
+                <span class="status-dot" id="headerDot"></span>
+                <span id="headerStatusText">Проверка...</span>
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Статус сервера</span>
+                        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                            <line x1="8" y1="21" x2="16" y2="21"/>
+                            <line x1="12" y1="17" x2="12" y2="21"/>
+                        </svg>
+                    </div>
+                    <div class="server-info" id="serverInfo">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Загрузка данных сервера...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="card current-build">
+                    <div class="card-header">
+                        <span class="card-title">Текущая сборка</span>
+                        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <div class="build-name">Jellyfish</div>
+                    <div class="build-version">v4.2.0</div>
+                    <p class="build-description">
+                        Актуальная модификация сервера CatShade. Включает все необходимые моды и конфигурации для комфортной игры.
+                    </p>
+                    <a href="https://catshade.ru/jellyfish/" class="build-link" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Скачать сборку
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">GitHub</span>
+                        <svg class="card-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </div>
+                    <div id="githubInfo">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Загрузка...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-8">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Релизы</span>
+                        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                            <line x1="7" y1="7" x2="7.01" y2="7"/>
+                        </svg>
+                    </div>
+                    <div class="releases-list" id="releasesList">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Загрузка релизов...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>CatShade Server © 2025-2026 — <a href="https://github.com/bUmmy1337/catshade-server" target="_blank">GitHub</a></p>
+            <p class="last-updated" id="lastUpdated"></p>
+        </footer>
+    </div>
+
+    <script>
+        // Конфигурация - актуальный релиз
+        const CURRENT_RELEASE_TAG = 'jellyfish-4.2.0';
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ru-RU', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function timeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            
+            const intervals = {
+                год: 31536000,
+                месяц: 2592000,
+                день: 86400,
+                час: 3600,
+                минута: 60
+            };
+            
+            for (const [name, secondsInInterval] of Object.entries(intervals)) {
+                const interval = Math.floor(seconds / secondsInInterval);
+                if (interval >= 1) {
+                    return `${interval} ${name}${interval > 1 ? (name === 'месяц' ? 'а' : name === 'год' ? 'а' : name === 'день' ? ' дня' : '') : ''} назад`;
+                }
+            }
+            return 'только что';
+        }
+
+        async function fetchServerStatus() {
+            const container = document.getElementById('serverInfo');
+            const headerDot = document.getElementById('headerDot');
+            const headerStatusText = document.getElementById('headerStatusText');
+            
+            try {
+                const response = await fetch('https://api.mcsrvstat.us/2/mc.catshade.ru');
+                const data = await response.json();
+                
+                if (data.online) {
+                    headerDot.className = 'status-dot online';
+                    headerStatusText.textContent = `${data.players?.online || 0}/${data.players?.max || 0} игроков`;
+                    
+                    let playersHtml = '';
+                    if (data.players?.list && data.players.list.length > 0) {
+                        playersHtml = `
+                            <div class="players-list">
+                                <div class="players-header">Игроки онлайн</div>
+                                ${data.players.list.slice(0, 10).map(player => `
+                                    <div class="player-item">
+                                        <img class="player-avatar" src="https://mc-heads.net/avatar/${player}/24" alt="${player}">
+                                        <span class="player-name">${player}</span>
+                                    </div>
+                                `).join('')}
+                                ${data.players.list.length > 10 ? `<div class="player-item"><span class="player-name">...и ещё ${data.players.list.length - 10}</span></div>` : ''}
+                            </div>
+                        `;
+                    } else if (data.players?.online === 0) {
+                        playersHtml = `<p class="no-players">Нет игроков онлайн</p>`;
+                    }
+                    
+                    container.innerHTML = `
+                        <div class="server-address">
+                            mc.catshade.ru
+                            <button class="copy-btn" onclick="copyToClipboard('mc.catshade.ru', this)">Копировать</button>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-label">Игроки</div>
+                                <div class="stat-value">${data.players?.online || 0}<span style="color: var(--text-muted); font-size: 14px;">/${data.players?.max || 0}</span></div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Версия</div>
+                                <div class="stat-value small">${data.version || 'N/A'}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Протокол</div>
+                                <div class="stat-value small">${data.protocol?.name || data.protocol || 'N/A'}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Статус</div>
+                                <div class="stat-value small" style="color: var(--success);">● Online</div>
+                            </div>
+                        </div>
+                        ${data.motd?.clean ? `<div class="motd">${data.motd.clean.join('<br>')}</div>` : ''}
+                        ${playersHtml}
+                    `;
+                } else {
+                    headerDot.className = 'status-dot offline';
+                    headerStatusText.textContent = 'Сервер недоступен';
+                    
+                    container.innerHTML = `
+                        <div class="server-address">
+                            mc.catshade.ru
+                            <button class="copy-btn" onclick="copyToClipboard('mc.catshade.ru', this)">Копировать</button>
+                        </div>
+                        <div class="stat-item" style="text-align: center; margin-top: 20px;">
+                            <div class="stat-label">Статус</div>
+                            <div class="stat-value small" style="color: var(--error);">● Offline</div>
+                        </div>
+                        <p style="color: var(--text-muted); text-align: center; margin-top: 16px;">
+                            Сервер временно недоступен. Попробуйте позже.
+                        </p>
+                    `;
+                }
+            } catch (error) {
+                headerDot.className = 'status-dot offline';
+                headerStatusText.textContent = 'Ошибка подключения';
+                container.innerHTML = `
+                    <div class="error-message">
+                        Не удалось получить статус сервера
+                    </div>
+                `;
+            }
+        }
+
+        async function fetchGitHubInfo() {
+            const container = document.getElementById('githubInfo');
+            
+            try {
+                const response = await fetch('https://api.github.com/repos/bUmmy1337/catshade-server');
+                const data = await response.json();
+                
+                container.innerHTML = `
+                    <div class="github-stats">
+                        <div class="github-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            ${data.stargazers_count || 0} stars
+                        </div>
+                        <div class="github-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="4"/>
+                                <line x1="1.05" y1="12" x2="7" y2="12"/>
+                                <line x1="17.01" y1="12" x2="22.96" y2="12"/>
+                            </svg>
+                            ${data.forks_count || 0} forks
+                        </div>
+                    </div>
+                    <div class="github-stats">
+                        <div class="github-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            ${data.pushed_at ? timeAgo(data.pushed_at) : 'N/A'}
+                        </div>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 13px; margin: 16px 0;">
+                        ${data.description || 'Репозиторий сервера CatShade'}
+                    </p>
+                    <a href="https://github.com/bUmmy1337/catshade-server" class="repo-link" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        Открыть репозиторий
+                    </a>
+                `;
+            } catch (error) {
+                container.innerHTML = `
+                    <a href="https://github.com/bUmmy1337/catshade-server" class="repo-link" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        Открыть репозиторий
+                    </a>
+                `;
+            }
+        }
+
+        async function fetchReleases() {
+            const container = document.getElementById('releasesList');
+            
+            try {
+                const response = await fetch('https://api.github.com/repos/bUmmy1337/catshade-server/releases');
+                const releases = await response.json();
+                
+                if (!Array.isArray(releases) || releases.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                            <p>Релизы пока не опубликованы</p>
+                            <a href="https://catshade.ru/jellyfish/" class="repo-link" style="margin-top: 16px; display: inline-flex;" target="_blank">
+                                Скачать текущую сборку
+                            </a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Сортировка: jellyfish-4.2.0 первым, остальные по дате
+                const sortedReleases = [...releases].sort((a, b) => {
+                    if (a.tag_name === CURRENT_RELEASE_TAG) return -1;
+                    if (b.tag_name === CURRENT_RELEASE_TAG) return 1;
+                    return new Date(b.published_at) - new Date(a.published_at);
+                });
+                
+                container.innerHTML = sortedReleases.map((release) => {
+                    const isCurrentRelease = release.tag_name === CURRENT_RELEASE_TAG;
+                    
+                    // Собираем бейджи
+                    let badges = '';
+                    if (isCurrentRelease) {
+                        badges += '<span class="release-badge current">На сервере</span>';
+                        badges += '<span class="release-badge">Latest</span>';
+                    }
+                    if (release.prerelease && !isCurrentRelease) {
+                        badges += '<span class="release-badge prerelease">Pre-release</span>';
+                    }
+                    
+                    return `
+                        <div class="release-item ${isCurrentRelease ? 'latest' : ''}">
+                            <div class="release-header">
+                                <div class="release-info">
+                                    <div class="release-tag">${release.tag_name}</div>
+                                    <div class="release-name">${release.name || 'Без названия'}</div>
+                                </div>
+                                <div class="release-badges">
+                                    ${badges}
+                                </div>
+                            </div>
+                            <div class="release-meta">
+                                <span>${formatDate(release.published_at)}</span>
+                                <span>${release.author?.login || 'Unknown'}</span>
+                            </div>
+                            ${release.assets && release.assets.length > 0 ? `
+                                <div class="release-assets">
+                                    ${release.assets.map(asset => `
+                                        <a href="${asset.browser_download_url}" class="asset-link" download>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                                <polyline points="7 10 12 15 17 10"/>
+                                                <line x1="12" y1="15" x2="12" y2="3"/>
+                                            </svg>
+                                            ${asset.name}
+                                            <span class="asset-size">${formatBytes(asset.size)}</span>
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            ` : `
+                                <div class="release-assets">
+                                    <a href="${release.zipball_url}" class="asset-link">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                            <polyline points="7 10 12 15 17 10"/>
+                                            <line x1="12" y1="15" x2="12" y2="3"/>
+                                        </svg>
+                                        Source (zip)
+                                    </a>
+                                    <a href="${release.tarball_url}" class="asset-link">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                            <polyline points="7 10 12 15 17 10"/>
+                                            <line x1="12" y1="15" x2="12" y2="3"/>
+                                        </svg>
+                                        Source (tar.gz)
+                                    </a>
+                                </div>
+                            `}
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="error-message">
+                        Не удалось загрузить список релизов
+                    </div>
+                `;
+            }
+        }
+
+        function copyToClipboard(text, button) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Скопировано!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = 
+                `Обновлено: ${now.toLocaleString('ru-RU')}`;
+        }
+
+        async function init() {
+            await Promise.all([
+                fetchServerStatus(),
+                fetchGitHubInfo(),
+                fetchReleases()
+            ]);
+            updateTimestamp();
+        }
+
+        init();
+
+        setInterval(() => {
+            fetchServerStatus();
+            updateTimestamp();
+        }, 60000);
+    </script>
+</body>
+</html>
