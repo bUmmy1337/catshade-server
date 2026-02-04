@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jellyfish: Installation</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-core: #020a12;
+            --bg-deep: #041525;
+            --accent: #00aaff;
+            --accent-soft: #48c6ef;
+            --accent-dim: rgba(0, 170, 255, 0.15);
+            --accent-glow: rgba(0, 170, 255, 0.4);
+            --text-main: #ffffff;
+            --text-sec: #8ba3b8;
+            --card-bg: rgba(10, 35, 60, 0.6);
+            --card-border: rgba(72, 198, 239, 0.1);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.3);
+            --warning: #f59e0b;
+            --warning-glow: rgba(245, 158, 11, 0.3);
+            
+            --anim-speed: 0.4s;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-core);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .bg-ambient {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2;
+            background: 
+                radial-gradient(ellipse at 50% 0%, rgba(0, 170, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(72, 198, 239, 0.1) 0%, transparent 40%),
+                radial-gradient(ellipse at 20% 90%, rgba(0, 100, 180, 0.1) 0%, transparent 40%),
+                linear-gradient(180deg, #041525 0%, #020a12 100%);
+        }
+        
+        .bubbles {
+            position: absolute;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .bubble {
+            position: absolute;
+            bottom: -50px;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), rgba(0, 170, 255, 0.1));
+            border-radius: 50%;
+            animation: rise linear infinite;
+            opacity: 0.6;
+        }
+        
+        .bubble:nth-child(1) { left: 10%; width: 20px; height: 20px; animation-duration: 8s; animation-delay: 0s; }
+        .bubble:nth-child(2) { left: 25%; width: 15px; height: 15px; animation-duration: 10s; animation-delay: 1s; }
+        .bubble:nth-child(3) { left: 45%; width: 25px; height: 25px; animation-duration: 12s; animation-delay: 2s; }
+        .bubble:nth-child(4) { left: 60%; width: 12px; height: 12px; animation-duration: 9s; animation-delay: 0.5s; }
+        .bubble:nth-child(5) { left: 75%; width: 18px; height: 18px; animation-duration: 11s; animation-delay: 3s; }
+        .bubble:nth-child(6) { left: 85%; width: 22px; height: 22px; animation-duration: 13s; animation-delay: 1.5s; }
+        .bubble:nth-child(7) { left: 5%; width: 10px; height: 10px; animation-duration: 7s; animation-delay: 4s; }
+        .bubble:nth-child(8) { left: 35%; width: 14px; height: 14px; animation-duration: 14s; animation-delay: 2.5s; }
+        
+        @keyframes rise {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.4; }
+            100% { transform: translateY(-110vh) translateX(20px); opacity: 0; }
+        }
+        
+        .waves {
+            position: fixed;
+            bottom: 0; left: 0;
+            width: 200%; height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath fill='%23041525' fill-opacity='0.3' d='M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C57.1,118.92,150.62,71.59,321.39,56.44Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: 50% 100%;
+            animation: wave 15s linear infinite;
+            opacity: 0.5;
+            z-index: -1;
+        }
+        
+        @keyframes wave { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            text-align: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #48c6ef 50%, #00aaff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.2rem;
+            text-shadow: 0 10px 40px rgba(0, 170, 255, 0.3);
+            letter-spacing: 2px;
+        }
+        
+        .title-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .jellyfish-icon {
+            width: 48px;
+            height: 48px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .subtitle { 
+            color: var(--text-sec); 
+            font-size: 0.85rem; 
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 2.5rem;
+            opacity: 0.7;
+        }
+        
+        .subtitle span { color: var(--accent-soft); }
+
+        h2 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+
+        .grid-options { display: grid; gap: 1rem; }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 1.25rem;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            text-align: left;
+            text-decoration: none;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 170, 255, 0.05), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px) scale(1.02);
+            border-color: var(--accent-glow);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5), 0 0 20px rgba(0, 170, 255, 0.1);
+        }
+
+        .card:hover::before { transform: translateX(100%); }
+        
+        .card.card-external {
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+        .card.card-external:hover {
+            border-color: rgba(245, 158, 11, 0.6);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5), 0 0 20px rgba(245, 158, 11, 0.15);
+        }
+        .card.card-external::before {
+            background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.05), transparent);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(0, 170, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            color: var(--accent);
+            flex-shrink: 0;
+            transition: 0.3s;
+        }
+        
+        .card:hover .card-icon {
+            background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+            color: #000;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        
+        .card.card-external .card-icon {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        .card.card-external:hover .card-icon {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            color: #000;
+            box-shadow: 0 0 20px var(--warning-glow);
+        }
+
+        .card-content { flex-grow: 1; }
+        .card-title { font-weight: 600; font-size: 1rem; display: block; margin-bottom: 4px; color: #fff; }
+        .card-desc { font-size: 0.8rem; color: var(--text-sec); line-height: 1.4; }
+        
+        .external-badge {
+            color: var(--warning);
+            border: 1px solid var(--warning-glow);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .danger-tag {
+            color: var(--danger);
+            border: 1px solid var(--danger-glow);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .trailer-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            margin-bottom: 2rem;
+            background: rgba(0, 170, 255, 0.1);
+            border: 1px solid rgba(0, 170, 255, 0.3);
+            border-radius: 50px;
+            color: var(--accent-soft);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        .trailer-btn:hover {
+            background: rgba(0, 170, 255, 0.2);
+            border-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.2);
+        }
+        .trailer-icon { width: 16px; height: 16px; fill: currentColor; }
+
+        .stage {
+            display: none;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        
+        .stage.active {
+            display: block;
+            animation: stageIn var(--anim-speed) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes stageIn { to { opacity: 1; transform: scale(1); } }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 10, 18, 0.95);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        
+        .modal-content {
+            width: 90%;
+            max-width: 800px;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 0 60px rgba(0, 170, 255, 0.3);
+            position: relative;
+            border: 1px solid rgba(0, 170, 255, 0.2);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: -45px; right: 0;
+            color: var(--text-sec);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .close-modal:hover { color: var(--accent); }
+
+        .back-link {
+            margin-top: 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-sec);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.3s;
+            opacity: 0.7;
+        }
+        .back-link:hover { opacity: 1; color: var(--accent); }
+
+        .download-btn {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-soft) 100%);
+            color: #000;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: 0.3s;
+            box-shadow: 0 0 30px rgba(0, 170, 255, 0.3);
+        }
+        .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(0, 170, 255, 0.5);
+        }
+        
+        .download-btn.secondary {
+            background: rgba(72, 198, 239, 0.15);
+            color: var(--accent-soft);
+            border: 1px solid rgba(72, 198, 239, 0.3);
+        }
+        .download-btn.secondary:hover {
+            background: rgba(72, 198, 239, 0.25);
+            border-color: var(--accent);
+            color: #fff;
+        }
+        
+        .version-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(0, 170, 255, 0.1);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--accent-soft);
+            margin-bottom: 1rem;
+        }
+        
+        .version-badge .dot {
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        
+        svg { width: 24px; height: 24px; }
+        code { 
+            background: rgba(0, 170, 255, 0.15); 
+            padding: 2px 8px; 
+            border-radius: 6px; 
+            font-family: monospace;
+            color: var(--accent-soft);
+        }
+        
+        .fabric-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: rgba(219, 216, 184, 0.1);
+            border-radius: 6px;
+            font-size: 0.7rem;
+            color: #dbd8b8;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-ambient"></div>
+    <div class="bubbles">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+    <div class="waves"></div>
+
+    <div class="modal-overlay" id="trailerModal" onclick="closeTrailer(event)">
+        <div class="modal-content">
+            <div class="close-modal" onclick="closeTrailer(event)">Закрыть ✕</div>
+            <iframe id="yt-player" width="100%" height="100%" src="" title="Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="header">
+            <div class="version-badge">
+                <span class="dot"></span>
+                <span>1.21.1 • Fabric</span>
+            </div>
+            <div class="title-wrapper">
+                <svg class="jellyfish-icon" viewBox="0 0 64 64" fill="none">
+                    <ellipse cx="32" cy="22" rx="18" ry="14" fill="url(#jelly-grad)" opacity="0.9"/>
+                    <path d="M18 28 Q16 42 20 52" stroke="#48c6ef" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+                    <path d="M26 30 Q24 45 26 56" stroke="#00aaff" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+                    <path d="M32 30 Q32 48 32 58" stroke="#48c6ef" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+                    <path d="M38 30 Q40 45 38 56" stroke="#00aaff" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+                    <path d="M46 28 Q48 42 44 52" stroke="#48c6ef" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+                    <ellipse cx="32" cy="20" rx="12" ry="8" fill="rgba(255,255,255,0.15)"/>
+                    <defs>
+                        <linearGradient id="jelly-grad" x1="14" y1="8" x2="50" y2="36">
+                            <stop offset="0%" stop-color="#48c6ef"/>
+                            <stop offset="100%" stop-color="#00aaff"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <h1>Jellyfish</h1>
+            </div>
+            <p class="subtitle">Ver. <span>4.2.0</span> // Fabric Modpack</p>
+        </div>
+
+        <!-- Шаг 1: Старт -->
+        <div id="step-start" class="stage active">
+            <button class="trailer-btn" onclick="openTrailer()">
+                <svg class="trailer-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                Смотреть обзор
+            </button>
+            <br>
+            <div class="card" onclick="nextStage('step-hardware')">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4M12 8h.01"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-title">Начать установку</span>
+                    <span class="card-desc">Выберите конфигурацию под ваш ПК</span>
+                </div>
+                <svg style="opacity: 0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+        </div>
+
+        <!-- Шаг 2: Выбор мощности -->
+        <div id="step-hardware" class="stage">
+            <h2>Характеристики ПК</h2>
+            <div class="grid-options">
+                <!-- Lite → переход на Bromum -->
+                <a href="https://catshade.ru/bromum" class="card card-external">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title">Слабый ПК <span class="external-badge">→ Bromum</span></span>
+                        <span class="card-desc">Для ноутбуков и слабых систем.<br>Перейти к оптимизированной сборке.</span>
+                    </div>
+                </a>
+
+                <div class="card" onclick="selectHardware('ultra')">
+                    <div class="card-icon" style="color: var(--accent-soft)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title">Мощный ПК — Ultra</span>
+                        <span class="card-desc">Для игровых систем.<br>Полные шейдеры и максимальные эффекты.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="back-link" onclick="prevStage('step-start')">
+                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Назад
+            </div>
+        </div>
+
+        <!-- Шаг 3: Выбор лаунчера -->
+        <div id="step-launcher" class="stage">
+            <h2>Выберите лаунчер</h2>
+            <div class="grid-options">
+                <div class="card" onclick="goToDownload('mrpack')">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title">Современные лаунчеры</span>
+                        <span class="card-desc">Prism, MultiMC, Modrinth App</span>
+                    </div>
+                </div>
+
+                <div class="card" onclick="goToDownload('zip')">
+                    <div class="card-icon" style="color: var(--text-sec)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 8v13H3V8M1 3h22v5H1z"/>
+                            <path d="M10 12h4"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title">Ручная установка</span>
+                        <span class="card-desc">Legacy Launcher, Official, другие</span>
+                    </div>
+                </div>
+
+                <div class="card" style="border-color: rgba(239, 68, 68, 0.3);" onclick="confirmDanger()">
+                    <div class="card-icon" style="color: var(--danger); background: rgba(239, 68, 68, 0.1);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title">TLauncher <span class="danger-tag">Risk</span></span>
+                        <span class="card-desc">Потенциальная угроза безопасности</span>
+                    </div>
+                </div>
+            </div>
+            <div class="back-link" onclick="prevStage('step-hardware')">
+                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Назад
+            </div>
+        </div>
+
+        <!-- Шаг 4: .mrpack -->
+        <div id="step-mrpack" class="stage">
+            <h2>Автоматическая установка</h2>
+            <p style="color: var(--text-sec); margin-bottom: 2rem; line-height: 1.7;">
+                Файл <code>.mrpack</code> содержит полную сборку <span style="color:var(--accent)">Jellyfish Ultra</span>.<br>
+                Перетащите файл в окно лаунчера.
+            </p>
+            
+            <a href="#" id="btn-mrpack" class="download-btn" download>
+                Скачать .mrpack
+            </a>
+            <div id="file-label-mr" style="margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-sec);">
+                Jellyfish-4.2.0.mrpack
+            </div>
+            <div class="fabric-tag" style="margin-top: 1rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                Fabric 1.21.1
+            </div>
+            
+            <div class="back-link" onclick="prevStage('step-launcher')">
+                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Назад
+            </div>
+        </div>
+
+        <!-- Шаг 5: .zip -->
+        <div id="step-zip" class="stage">
+            <h2>Ручная установка</h2>
+            <p style="color: var(--text-sec); margin-bottom: 2rem; line-height: 1.7;">
+                Полная сборка <span style="color:var(--accent)">Jellyfish Ultra</span>.<br>
+                Распакуйте содержимое в папку <code>.minecraft</code>
+            </p>
+            
+            <a href="#" id="btn-zip" class="download-btn secondary" download>
+                Скачать .zip
+            </a>
+            <div id="file-label-zip" style="margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-sec);">
+                Jellyfish-4.2.0.zip
+            </div>
+            <div class="fabric-tag" style="margin-top: 1rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                Fabric 1.21.1
+            </div>
+
+            <div class="back-link" onclick="prevStage('step-launcher')">
+                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Назад
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const downloadLinks = {
+            mrpack: "https://github.com/bUmmy1337/catshade-server/releases/download/jellyfish-4.2.0/Jellyfish-4.2.0-Fabric.mrpack",
+            zip: "https://github.com/bUmmy1337/catshade-server/releases/download/jellyfish-4.2.0/Jellyfish-4.2.0-Fabric.zip",
+            fileNameMr: "Jellyfish-4.2.0.mrpack",
+            fileNameZip: "Jellyfish-4.2.0.zip"
+        };
+
+        function switchStage(fromId, toId, direction) {
+            const current = document.getElementById(fromId);
+            const next = document.getElementById(toId);
+            
+            current.style.transition = "opacity 0.3s, transform 0.3s";
+            current.style.opacity = '0';
+            current.style.transform = direction === 'forward' ? 'translateX(-20px)' : 'translateX(20px)';
+            
+            setTimeout(() => {
+                current.classList.remove('active');
+                current.style = ''; 
+                next.classList.add('active');
+            }, 300);
+        }
+
+        function nextStage(targetId) {
+            const currentId = document.querySelector('.stage.active').id;
+            switchStage(currentId, targetId, 'forward');
+        }
+
+        function prevStage(targetId) {
+            const currentId = document.querySelector('.stage.active').id;
+            switchStage(currentId, targetId, 'back');
+        }
+
+        function selectHardware(type) {
+            document.getElementById('btn-mrpack').href = downloadLinks.mrpack;
+            document.getElementById('btn-zip').href = downloadLinks.zip;
+            document.getElementById('file-label-mr').textContent = downloadLinks.fileNameMr;
+            document.getElementById('file-label-zip').textContent = downloadLinks.fileNameZip;
+            nextStage('step-launcher');
+        }
+
+        function goToDownload(type) {
+            nextStage(type === 'mrpack' ? 'step-mrpack' : 'step-zip');
+        }
+
+        function confirmDanger() {
+            if (confirm("⚠️ Внимание!\n\nTLauncher имеет сомнительную репутацию.\nРекомендуется использовать Prism Launcher.\n\nВсё равно продолжить?")) {
+                goToDownload('zip');
+            }
+        }
+
+        function openTrailer() {
+            document.getElementById('yt-player').src = "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0";
+            document.getElementById('trailerModal').classList.add('open');
+        }
+
+        function closeTrailer(e) {
+            if (e.target.id === 'trailerModal' || e.target.classList.contains('close-modal')) {
+                document.getElementById('trailerModal').classList.remove('open');
+                setTimeout(() => { document.getElementById('yt-player').src = ""; }, 300);
+            }
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('trailerModal').classList.remove('open');
+                setTimeout(() => { document.getElementById('yt-player').src = ""; }, 300);
+            }
+        });
+    </script>
+</body>
+</html>
