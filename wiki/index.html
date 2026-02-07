@@ -1,0 +1,2605 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CatShade Wiki</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+        :root {
+            --bg: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: #141414;
+            --border: #222222;
+            --border-hover: #333333;
+            --text-primary: #e8e8e8;
+            --text-secondary: #999999;
+            --text-muted: #555555;
+            --accent: #ffffff;
+            --accent-dim: #cccccc;
+            --glow: rgba(255, 255, 255, 0.03);
+            --scrollbar-track: #111111;
+            --scrollbar-thumb: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 3px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* === HEADER === */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .header.scrolled {
+            background: rgba(10, 10, 10, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            position: relative;
+        }
+
+        .logo-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .header-nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            letter-spacing: -0.2px;
+        }
+
+        .header-nav a:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .header-nav a.active {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .mobile-toggle:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .mobile-toggle svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* === SIDEBAR === */
+        .layout {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 64px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 64px;
+            left: max(0px, calc((100vw - 1400px) / 2));
+            width: 280px;
+            height: calc(100vh - 64px);
+            overflow-y: auto;
+            padding: 24px 20px;
+            border-right: 1px solid var(--border);
+            background: var(--bg);
+            z-index: 100;
+            scrollbar-width: thin;
+            scrollbar-color: transparent transparent;
+            transition: scrollbar-color 0.3s;
+        }
+
+        .sidebar:hover {
+            scrollbar-color: var(--scrollbar-thumb) transparent;
+        }
+
+        .sidebar-section {
+            margin-bottom: 28px;
+        }
+
+        .sidebar-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            padding-left: 12px;
+        }
+
+        .sidebar-links {
+            list-style: none;
+        }
+
+        .sidebar-links li {
+            margin-bottom: 1px;
+        }
+
+        .sidebar-links a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 450;
+            border-radius: 8px;
+            transition: all 0.15s ease;
+            letter-spacing: -0.1px;
+        }
+
+        .sidebar-links a:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .sidebar-links a.active {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .sidebar-links a .link-icon {
+            font-size: 15px;
+            width: 20px;
+            text-align: center;
+            opacity: 0.6;
+        }
+
+        .sidebar-links a:hover .link-icon,
+        .sidebar-links a.active .link-icon {
+            opacity: 1;
+        }
+
+        .sidebar-links .sub-links {
+            list-style: none;
+            padding-left: 28px;
+            margin-top: 2px;
+        }
+
+        .sidebar-links .sub-links a {
+            font-size: 12.5px;
+            padding: 5px 12px;
+            color: var(--text-muted);
+            position: relative;
+        }
+
+        .sidebar-links .sub-links a::before {
+            content: '';
+            position: absolute;
+            left: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 16px;
+            background: var(--border);
+        }
+
+        .sidebar-links .sub-links a:hover {
+            color: var(--text-secondary);
+        }
+
+        /* === MAIN CONTENT === */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            min-height: calc(100vh - 64px);
+        }
+
+        .content-wrapper {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 48px 48px 120px;
+        }
+
+        /* === HERO === */
+        .hero {
+            margin-bottom: 64px;
+            padding-bottom: 48px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .hero-badge .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .hero h1 {
+            font-size: 44px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            background: linear-gradient(180deg, #ffffff 0%, #888888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            max-width: 560px;
+        }
+
+        /* === SECTION === */
+        .wiki-section {
+            margin-bottom: 72px;
+            scroll-margin-top: 100px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .section-header-text h2 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.8px;
+            line-height: 1.2;
+        }
+
+        .section-header-text p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 16px;
+            margin-top: 40px;
+            color: var(--text-primary);
+        }
+
+        h3:first-child {
+            margin-top: 0;
+        }
+
+        h4 {
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            margin-bottom: 12px;
+            margin-top: 28px;
+            color: var(--accent-dim);
+        }
+
+        p {
+            font-size: 14.5px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.75;
+        }
+
+        /* === CARDS === */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            transition: border-color 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card p {
+            font-size: 13.5px;
+            margin-bottom: 12px;
+        }
+
+        .card p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* === INFO BOX === */
+        .info-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--text-muted);
+            border-radius: 0 12px 12px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .info-box.warning {
+            border-left-color: #888;
+        }
+
+        .info-box.tip {
+            border-left-color: #666;
+        }
+
+        .info-box-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-box p {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .info-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* === LISTS === */
+        ul, ol {
+            padding-left: 20px;
+            margin-bottom: 16px;
+        }
+
+        li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            line-height: 1.65;
+        }
+
+        li::marker {
+            color: var(--text-muted);
+        }
+
+        .rule-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .rule-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            font-size: 13.5px;
+        }
+
+        .rule-list li .rule-icon {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            margin-top: 1px;
+        }
+
+        /* === COMMAND INLINE === */
+        code, .cmd {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 5px;
+            color: var(--accent-dim);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* === COMMAND TABLE === */
+        .command-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 13px;
+        }
+
+        .command-table thead {
+            position: sticky;
+            top: 0;
+        }
+
+        .command-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .command-table th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        .command-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        .command-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .command-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .command-table tr:last-child td:first-child {
+            border-radius: 0 0 0 8px;
+        }
+
+        .command-table tr:last-child td:last-child {
+            border-radius: 0 0 8px 0;
+        }
+
+        .command-table td:first-child {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--accent-dim);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .command-table tbody tr {
+            transition: background 0.15s ease;
+        }
+
+        .command-table tbody tr:hover {
+            background: var(--bg-card);
+        }
+
+        .table-wrap {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        /* === RECIPE CARDS === */
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .recipe-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s ease;
+        }
+
+        .recipe-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .recipe-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s ease;
+        }
+
+        .recipe-header:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .recipe-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .recipe-emoji {
+            font-size: 20px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .recipe-name {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        .recipe-meta-badge {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-weight: 600;
+            letter-spacing: -0.1px;
+        }
+
+        .badge-alcohol {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .recipe-toggle {
+            font-size: 14px;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+
+        .recipe-card.open .recipe-toggle {
+            transform: rotate(180deg);
+        }
+
+        .recipe-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .recipe-card.open .recipe-body {
+            max-height: 500px;
+        }
+
+        .recipe-body-inner {
+            padding: 0 20px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .recipe-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .recipe-detail {
+            padding: 12px 14px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .recipe-detail-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .recipe-detail-value {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .recipe-detail.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* === STEPS === */
+        .steps {
+            counter-reset: step-counter;
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .step {
+            counter-increment: step-counter;
+            display: flex;
+            gap: 16px;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .step:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .step-content h4 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .step-content p {
+            font-size: 13.5px;
+            margin-bottom: 8px;
+        }
+
+        /* === BACK TO TOP === */
+        .back-to-top {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 500;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+
+        /* === FOOTER === */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 32px 48px;
+            margin-top: 0;
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* === SEARCH === */
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 14px 10px 36px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-input:focus {
+            border-color: var(--border-hover);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* === MOBILE SIDEBAR === */
+        .mobile-sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .mobile-sidebar-overlay.active {
+            opacity: 1;
+        }
+
+        /* === TOC inside content === */
+        .toc {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 40px;
+        }
+
+        .toc-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toc-list li {
+            margin-bottom: 4px;
+        }
+
+        .toc-list a {
+            display: block;
+            padding: 6px 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.15s;
+        }
+
+        .toc-list a:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .toc-list .indent {
+            padding-left: 28px;
+        }
+
+        /* === DIVIDER === */
+        .divider {
+            border: none;
+            height: 1px;
+            background: var(--border);
+            margin: 40px 0;
+        }
+
+        /* === TAG === */
+        .tag {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 1100px) {
+            .sidebar {
+                left: 0;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .header-inner {
+                padding: 0 20px;
+            }
+
+            .header-nav {
+                display: none;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                width: 280px;
+                z-index: 1001;
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .mobile-sidebar-overlay {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .content-wrapper {
+                padding: 32px 20px 80px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+                letter-spacing: -1.5px;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .recipe-detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .recipe-meta-badge {
+                display: none;
+            }
+
+            .command-table td:first-child {
+                white-space: normal;
+                word-break: break-all;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .section-header-text h2 {
+                font-size: 20px;
+            }
+
+            .table-wrap {
+                overflow-x: auto;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+        }
+
+        /* === ANIMATION === */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === BARREL VISUAL === */
+        .barrel-visual {
+            display: flex;
+            gap: 24px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .barrel-item {
+            flex: 1;
+            min-width: 200px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .barrel-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .barrel-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .barrel-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* === CATEGORY TABS === */
+        .category-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cat-tab {
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            border-radius: 100px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .cat-tab:hover, .cat-tab.active {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+        }
+
+        /* === PROGRESS-LIKE INDICATOR === */
+        .quality-stars {
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            font-size: 13px;
+        }
+
+        .quality-stars .filled {
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header" id="header">
+        <div class="header-inner">
+            <a href="#top" class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="8" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
+                        <path d="M8 20C8 20 10 14 16 14C22 14 24 20 24 20" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="12" cy="12" r="1.5" fill="#888"/>
+                        <circle cx="20" cy="12" r="1.5" fill="#888"/>
+                        <path d="M7 10L5 7" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M9 9L8 5" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M25 10L27 7" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M23 9L24 5" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">CatShade <span>Wiki</span></div>
+            </a>
+            <nav class="header-nav" id="headerNav">
+                <a href="#towny" class="active">Towny</a>
+                <a href="#flagwar">FlagWar</a>
+                <a href="#brewery">Brewery</a>
+                <a href="#recipes-section">Рецепты</a>
+            </nav>
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Меню">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5h14a1 1 0 010 2H3a1 1 0 010-2zm0 4h14a1 1 0 010 2H3a1 1 0 010-2zm0 4h14a1 1 0 010 2H3a1 1 0 010-2z"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="mobile-sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="search-wrapper">
+                <span class="search-icon">⌕</span>
+                <input type="text" class="search-input" id="searchInput" placeholder="Поиск...">
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Начало</div>
+                <ul class="sidebar-links">
+                    <li><a href="#top" class="active"><span class="link-icon">◈</span> Главная</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Towny</div>
+                <ul class="sidebar-links">
+                    <li><a href="#towny"><span class="link-icon">🏘</span> О Towny</a></li>
+                    <li>
+                        <ul class="sub-links">
+                            <li><a href="#towny-basics">Основы</a></li>
+                            <li><a href="#towny-town">Создание города</a></li>
+                            <li><a href="#towny-residents">Жители</a></li>
+                            <li><a href="#towny-plots">Участки</a></li>
+                            <li><a href="#towny-nations">Нации</a></li>
+                            <li><a href="#towny-economy">Экономика</a></li>
+                            <li><a href="#towny-commands">Команды</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">FlagWar</div>
+                <ul class="sidebar-links">
+                    <li><a href="#flagwar"><span class="link-icon">⚔</span> Войны флагов</a></li>
+                    <li>
+                        <ul class="sub-links">
+                            <li><a href="#flagwar-how">Как это работает</a></li>
+                            <li><a href="#flagwar-attack">Атака</a></li>
+                            <li><a href="#flagwar-defend">Защита</a></li>
+                            <li><a href="#flagwar-economy">Стоимость</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Brewery</div>
+                <ul class="sidebar-links">
+                    <li><a href="#brewery"><span class="link-icon">🍺</span> Варка напитков</a></li>
+                    <li>
+                        <ul class="sub-links">
+                            <li><a href="#brew-ferment">Ферментация</a></li>
+                            <li><a href="#brew-distill">Дистилляция</a></li>
+                            <li><a href="#brew-age">Выдержка</a></li>
+                            <li><a href="#brew-effects">Эффекты</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#recipes-section"><span class="link-icon">📜</span> Рецепты</a></li>
+                    <li>
+                        <ul class="sub-links">
+                            <li><a href="#recipes-beer">Пиво</a></li>
+                            <li><a href="#recipes-wine">Вино и сидр</a></li>
+                            <li><a href="#recipes-spirits">Крепкие</a></li>
+                            <li><a href="#recipes-other">Прочее</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-content">
+            <div class="content-wrapper">
+
+                <!-- HERO -->
+                <div class="hero fade-in" id="top">
+                    <div class="hero-badge">
+                        <span class="dot"></span>
+                        Сервер онлайн
+                    </div>
+                    <h1>CatShade Wiki</h1>
+                    <p>Полное руководство по серверным плагинам и механикам. Здесь вы найдёте всё необходимое для игры: от создания города до варки напитков.</p>
+                </div>
+
+                <!-- ==================== TOWNY ==================== -->
+                <section class="wiki-section fade-in" id="towny">
+                    <div class="section-header">
+                        <div class="section-icon">🏘</div>
+                        <div class="section-header-text">
+                            <h2>Towny</h2>
+                            <p>Система городов, наций и территорий</p>
+                        </div>
+                    </div>
+
+                    <div id="towny-basics">
+                        <h3>Что такое Towny?</h3>
+                        <p>Towny — это плагин управления территориями, позволяющий игрокам создавать города, объединяться в нации, управлять участками и защищать свои земли от посторонних. Территория делится на <strong>чанки</strong> (16×16 блоков), которые могут быть заприватированы городом.</p>
+
+                        <div class="info-box tip">
+                            <div class="info-box-title">💡 Совет</div>
+                            <p>Используйте команду <code>/towny map</code>, чтобы увидеть карту чанков вокруг вас прямо в чате. Зелёные чанки — территория вашего города, красные — чужие.</p>
+                        </div>
+                    </div>
+
+                    <div id="towny-town">
+                        <h3>Создание города</h3>
+                        <p>Чтобы основать собственный город, встаньте в желаемом месте и введите команду:</p>
+                        <p><code>/town new [название]</code></p>
+                        <p>Чанк, в котором вы стоите, станет <strong>Home-блоком</strong> вашего города — его центром. Создание города требует определённую сумму игровой валюты. После создания вы автоматически становитесь мэром.</p>
+
+                        <div class="info-box warning">
+                            <div class="info-box-title">⚠ Важно</div>
+                            <p>Home-блок нельзя перенести просто так. Выбирайте место для основания города обдуманно — это будет его сердце.</p>
+                        </div>
+
+                        <h4>Расширение территории</h4>
+                        <p>Чтобы занять соседний чанк, встаньте в него и введите:</p>
+                        <p><code>/town claim</code></p>
+                        <p>Новые чанки можно присоединять только рядом с уже занятыми. Максимальное количество чанков зависит от числа жителей города.</p>
+                    </div>
+
+                    <div id="towny-residents">
+                        <h3>Жители</h3>
+                        <p>Приглашайте других игроков в свой город:</p>
+                        <p><code>/town invite [игрок]</code></p>
+                        <p>Приглашённый игрок получит уведомление и сможет принять его командой <code>/accept</code>. Чем больше жителей — тем больше чанков может занять город.</p>
+
+                        <h4>Ранги</h4>
+                        <p>Мэр может назначать жителям ранги, дающие дополнительные права:</p>
+
+                        <div class="table-wrap">
+                            <table class="command-table">
+                                <thead>
+                                    <tr><th>Ранг</th><th>Описание</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>assistant</td><td>Помощник мэра — может приглашать, кикать жителей и управлять участками</td></tr>
+                                    <tr><td>builder</td><td>Строитель — расширенные права на строительство в городе</td></tr>
+                                    <tr><td>sheriff</td><td>Шериф — может выгонять нарушителей с территории города</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p>Назначение ранга: <code>/town rank add [игрок] [ранг]</code></p>
+                    </div>
+
+                    <div id="towny-plots">
+                        <h3>Участки (Plots)</h3>
+                        <p>Каждый заприваченный чанк — это участок, который можно настроить индивидуально. Мэр может выставлять участки на продажу жителям:</p>
+                        <p><code>/plot forsale [цена]</code> — выставить текущий чанк на продажу</p>
+                        <p><code>/plot claim</code> — житель покупает участок</p>
+                        <p><code>/plot set [тип]</code> — установить тип участка</p>
+
+                        <h4>Типы участков</h4>
+                        <div class="table-wrap">
+                            <table class="command-table">
+                                <thead>
+                                    <tr><th>Тип</th><th>Описание</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>default</td><td>Обычный участок</td></tr>
+                                    <tr><td>shop</td><td>Магазин — разрешена торговля</td></tr>
+                                    <tr><td>arena</td><td>Арена — PvP разрешён на этом участке</td></tr>
+                                    <tr><td>embassy</td><td>Посольство — могут покупать жители других городов</td></tr>
+                                    <tr><td>farm</td><td>Ферма — разрешено взаимодействие с посевами для всех</td></tr>
+                                    <tr><td>wilds</td><td>Дикие земли — разрешена добыча ресурсов</td></tr>
+                                    <tr><td>inn</td><td>Таверна — точка спавна для гостей</td></tr>
+                                    <tr><td>jail</td><td>Тюрьма — место заключения нарушителей</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>Права на участках</h4>
+                        <p>Для тонкой настройки прав используйте переключатели:</p>
+                        <p><code>/plot toggle [fire/pvp/explosion/mobs]</code></p>
+                        <p>Настройка прав для групп (жители, союзники, чужие):</p>
+                        <p><code>/plot set perm [resident/ally/outsider] [build/destroy/switch/itemuse] [on/off]</code></p>
+                    </div>
+
+                    <div id="towny-nations">
+                        <h3>Нации</h3>
+                        <p>Города могут объединяться в нации для совместной дипломатии и военных действий.</p>
+
+                        <p><code>/nation new [название]</code> — основать нацию (доступно мэрам)</p>
+                        <p><code>/nation invite [город]</code> — пригласить город в нацию</p>
+                        <p><code>/nation ally add [нация]</code> — заключить союз</p>
+                        <p><code>/nation enemy add [нация]</code> — объявить враждебность</p>
+
+                        <div class="info-box">
+                            <div class="info-box-title">📌 Примечание</div>
+                            <p>Объявление нации врагом — это первый шаг к войне через FlagWar. Подробнее в разделе <a href="#flagwar" style="color: var(--accent-dim);">Войны флагов</a>.</p>
+                        </div>
+
+                        <h4>Ранги нации</h4>
+                        <p>Король нации (основатель) может назначать звания:</p>
+                        <p><code>/nation rank add [игрок] [ранг]</code></p>
+                    </div>
+
+                    <div id="towny-economy">
+                        <h3>Экономика</h3>
+                        <p>Города и нации требуют регулярных вложений:</p>
+                        <ul>
+                            <li><strong>Налоги:</strong> мэр устанавливает налоги для жителей — <code>/town set taxes [сумма]</code></li>
+                            <li><strong>Аплэнд:</strong> ежедневное обслуживание города, зависит от количества чанков</li>
+                            <li><strong>Банк города:</strong> <code>/town deposit [сумма]</code> / <code>/town withdraw [сумма]</code></li>
+                            <li><strong>Банк нации:</strong> <code>/nation deposit [сумма]</code></li>
+                        </ul>
+
+                        <div class="info-box warning">
+                            <div class="info-box-title">⚠ Внимание</div>
+                            <p>Если в казне города закончатся деньги, город может быть удалён! Следите за балансом и вовремя пополняйте казну.</p>
+                        </div>
+                    </div>
+
+                    <div id="towny-commands">
+                        <h3>Основные команды</h3>
+                        <div class="table-wrap">
+                            <table class="command-table">
+                                <thead>
+                                    <tr><th>Команда</th><th>Описание</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>/towny</td><td>Общая информация о плагине</td></tr>
+                                    <tr><td>/towny map</td><td>Показать карту чанков в чате</td></tr>
+                                    <tr><td>/town</td><td>Информация о вашем городе</td></tr>
+                                    <tr><td>/town new [имя]</td><td>Основать город</td></tr>
+                                    <tr><td>/town claim</td><td>Заприватить чанк</td></tr>
+                                    <tr><td>/town unclaim</td><td>Освободить чанк</td></tr>
+                                    <tr><td>/town invite [игрок]</td><td>Пригласить в город</td></tr>
+                                    <tr><td>/town kick [игрок]</td><td>Выгнать из города</td></tr>
+                                    <tr><td>/town leave</td><td>Покинуть город</td></tr>
+                                    <tr><td>/town spawn</td><td>Телепортироваться в город</td></tr>
+                                    <tr><td>/town set spawn</td><td>Установить точку спавна города</td></tr>
+                                    <tr><td>/town set board [текст]</td><td>Установить приветственное сообщение</td></tr>
+                                    <tr><td>/town toggle open</td><td>Открыть/закрыть город для вступления</td></tr>
+                                    <tr><td>/town toggle pvp</td><td>Вкл/выкл PvP в городе</td></tr>
+                                    <tr><td>/plot claim</td><td>Купить участок</td></tr>
+                                    <tr><td>/plot forsale [цена]</td><td>Выставить участок на продажу</td></tr>
+                                    <tr><td>/resident</td><td>Информация о себе</td></tr>
+                                    <tr><td>/resident [игрок]</td><td>Информация о другом игроке</td></tr>
+                                    <tr><td>/nation</td><td>Информация о вашей нации</td></tr>
+                                    <tr><td>/nation new [имя]</td><td>Основать нацию</td></tr>
+                                    <tr><td>/nation leave</td><td>Покинуть нацию</td></tr>
+                                    <tr><td>/nation list</td><td>Список всех наций</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="divider">
+
+                <!-- ==================== FLAGWAR ==================== -->
+                <section class="wiki-section fade-in" id="flagwar">
+                    <div class="section-header">
+                        <div class="section-icon">⚔</div>
+                        <div class="section-header-text">
+                            <h2>FlagWar</h2>
+                            <p>Система войн между нациями</p>
+                        </div>
+                    </div>
+
+                    <div id="flagwar-how">
+                        <h3>Как это работает?</h3>
+                        <p>FlagWar — это механика захвата территорий между враждующими нациями. Система позволяет оспаривать чанки вражеских городов, устанавливая военные флаги.</p>
+
+                        <div class="steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Объявление вражды</h4>
+                                    <p>Король нации объявляет другую нацию врагом командой <code>/nation enemy add [нация]</code>. С этого момента жители нации-агрессора получают право атаковать города противника.</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Подготовка к атаке</h4>
+                                    <p>Атакующему потребуются <strong>дубовые столбы забора</strong> — из них создаётся военный флаг. Убедитесь, что в вашем городе есть свободные чанки для захвата.</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Захват территории</h4>
+                                    <p>Установите флаг на приграничном чанке вражеского города. Система создаст таймер и маяк, видимый защитникам. Удерживайте позицию, пока индикатор не станет красным — после этого чанк переходит к вашему городу.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="flagwar-attack">
+                        <h3>Атака</h3>
+                        <p>Правила и ограничения для атакующей стороны:</p>
+
+                        <ul class="rule-list">
+                            <li><span class="rule-icon">✕</span> Серверные операторы (OP) не могут атаковать</li>
+                            <li><span class="rule-icon">✕</span> Нельзя атаковать нейтральные / мирные нации</li>
+                            <li><span class="rule-icon">✕</span> Нельзя атаковать, находясь в нейтральной нации</li>
+                            <li><span class="rule-icon">✕</span> Нельзя ставить флаги в мирах с потолком (например, Незер)</li>
+                            <li><span class="rule-icon">◈</span> Флаги можно ставить только на приграничных чанках</li>
+                            <li><span class="rule-icon">◈</span> Флаги ставятся только на поверхности — небо должно быть открыто</li>
+                            <li><span class="rule-icon">◈</span> Обе стороны должны иметь минимальное количество игроков онлайн</li>
+                        </ul>
+
+                        <div class="info-box">
+                            <div class="info-box-title">📌 Автоматическая вражда</div>
+                            <p>При атаке ваша нация автоматически добавляется в список врагов защищающейся нации. Это позволяет обороняющимся немедленно контратаковать, не дожидаясь короля.</p>
+                        </div>
+
+                        <h4>Механика флага</h4>
+                        <p>После установки флага Towny автоматически размещает блок-таймер (цветная шерсть) и источник света поверх забора. В небе появляется маяк-куб, указывающий защитникам место атаки. Шерсть меняет цвет от <strong>зелёного к красному</strong> по мере прогресса захвата.</p>
+                    </div>
+
+                    <div id="flagwar-defend">
+                        <h3>Защита</h3>
+                        <p>Когда враг начинает атаку, координаты публикуются в глобальный чат сервера. Ваши действия:</p>
+
+                        <div class="steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Найдите координаты</h4>
+                                    <p>Следите за глобальным чатом — там будут опубликованы координаты Towny. Используйте <code>/towny map</code>, чтобы определить своё положение.</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Найдите маяк</h4>
+                                    <p>Приблизившись к координатам, ищите в небе боевой маяк — парящий куб. Он не всегда рендерится на расстоянии, поэтому двигайтесь в нужном направлении.</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Уничтожьте флаг</h4>
+                                    <p>Убейте врагов и сломайте <strong>блок-таймер</strong> (блок над столбом забора). Это отменит атаку и защитит ваш чанк.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="flagwar-economy">
+                        <h3>Экономические затраты</h3>
+                        <p>Война — дорогое удовольствие. Финансовые аспекты FlagWar:</p>
+
+                        <div class="card">
+                            <div class="card-title">💰 Плата за установку флага</div>
+                            <p>При размещении флага с атакующего взимается стоимость ставки. Система также проверяет, может ли игрок оплатить последствия — как успешной, так и неудачной атаки.</p>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">🛡 Штраф за провал</div>
+                            <p>Если защитник ломает флаг, атакующий платит дополнительный штраф в казну обороняющегося города.</p>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">📊 Разные ставки</div>
+                            <p>Стоимость атаки на Home-блок и обычные чанки различается. Существуют два режима: <strong>разграбление</strong> (город-защитник платит атакующему) и <strong>компенсация</strong> (атакующий платит городу за разрушения).</p>
+                        </div>
+
+                        <div class="info-box">
+                            <div class="info-box-title">📌 Права при захвате</div>
+                            <p>Пока флаг оспаривает территорию, права на блоки меняются. Однако полные права на разрушение могут быть доступны только после окончательного захвата чанка — это зависит от настроек сервера.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="divider">
+
+                <!-- ==================== BREWERY ==================== -->
+                <section class="wiki-section fade-in" id="brewery">
+                    <div class="section-header">
+                        <div class="section-icon">🍺</div>
+                        <div class="section-header-text">
+                            <h2>Brewery</h2>
+                            <p>Система варки алкогольных и безалкогольных напитков</p>
+                        </div>
+                    </div>
+
+                    <p>Варка напитков состоит из трёх этапов: <strong>ферментация</strong>, <strong>дистилляция</strong> и <strong>выдержка</strong>. Не каждый рецепт требует все три этапа — сверяйтесь с рецептом конкретного напитка.</p>
+
+                    <div id="brew-ferment">
+                        <h3>Этап 1 — Ферментация</h3>
+                        <p>Для ферментации вам понадобится <strong>котёл с водой</strong> над источником огня. Подходящие источники:</p>
+                        <ul>
+                            <li>Огонь (на незераке, чтобы не гас)</li>
+                            <li>Блок магмы</li>
+                            <li>Блок лавы</li>
+                            <li>Костёр</li>
+                        </ul>
+
+                        <div class="info-box tip">
+                            <div class="info-box-title">💡 Совет</div>
+                            <p>Котлы можно ставить вплотную друг к другу — главное, чтобы под каждым был источник тепла.</p>
+                        </div>
+
+                        <p>Возьмите ингредиенты по рецепту в руку и нажмите <strong>ПКМ</strong> по котлу. Чтобы отслеживать время ферментации, кликните <strong>ПКМ часами</strong> по котлу — в чате появится время с момента загрузки последнего ингредиента.</p>
+
+                        <div class="info-box">
+                            <div class="info-box-title">📌 Примечание</div>
+                            <p>Время отображается только с третьей минуты. Первые две минуты выдаётся сообщение: «Котел только начал кипеть».</p>
+                        </div>
+
+                        <p>Когда время ферментации истечёт, кликните <strong>ПКМ пустой бутылочкой</strong> по котлу, чтобы разлить напиток. Из одного полного котла получается <strong>3 бутылки</strong>.</p>
+                    </div>
+
+                    <div id="brew-distill">
+                        <h3>Этап 2 — Дистилляция</h3>
+                        <p>Некоторые напитки требуют перегонки. Используйте <strong>зельеварку</strong>:</p>
+                        <ol>
+                            <li>Поместите <strong>светокаменную пыль</strong> в слот для ингредиента (она не расходуется)</li>
+                            <li>Загрузите бутылки с ферментированным напитком</li>
+                            <li>Дождитесь нужного количества циклов дистилляции</li>
+                        </ol>
+
+                        <div class="info-box tip">
+                            <div class="info-box-title">💡 Совет</div>
+                            <p>Дистилляция останавливается автоматически по достижении нужного числа циклов. Можно не следить за процессом.</p>
+                        </div>
+
+                        <div class="info-box warning">
+                            <div class="info-box-title">⚠ Внимание</div>
+                            <p>Если поместить в зельеварку со светопылью напиток, не предназначенный для дистилляции, он будет терять качество с каждым циклом и превратится в мутный дистиллят.</p>
+                        </div>
+                    </div>
+
+                    <div id="brew-age">
+                        <h3>Этап 3 — Выдержка</h3>
+                        <p>Для выдержки необходимо поместить напиток в бочку. <strong>1 год выдержки = 20 минут</strong> реального времени. Тип древесины бочки влияет на результат — сверяйтесь с рецептом.</p>
+
+                        <div class="barrel-visual">
+                            <div class="barrel-item">
+                                <div class="barrel-icon">🪣</div>
+                                <div class="barrel-name">Малая бочка</div>
+                                <div class="barrel-desc">8 ступеней + табличка «Barrel»<br>9 слотов</div>
+                            </div>
+                            <div class="barrel-item">
+                                <div class="barrel-icon">🛢</div>
+                                <div class="barrel-name">Большая бочка</div>
+                                <div class="barrel-desc">Больше ресурсов<br>27 слотов</div>
+                            </div>
+                            <div class="barrel-item">
+                                <div class="barrel-icon">📦</div>
+                                <div class="barrel-name">Бочка Minecraft</div>
+                                <div class="barrel-desc">Считается дубовой<br>6 слотов под напитки</div>
+                            </div>
+                        </div>
+
+                        <div class="info-box warning">
+                            <div class="info-box-title">⚠ Внимание</div>
+                            <p>Плагинные бочки не любят, когда рядом стоят доски — могут потерять свойства, перестать открываться и выбросить содержимое. Не стройте их вплотную к деревянным стенам.</p>
+                        </div>
+
+                        <div class="info-box">
+                            <div class="info-box-title">📌 Хранение</div>
+                            <p>Храните готовые напитки в <strong>сундуках</strong>, а не в бочках — иначе они могут продолжить «выдерживаться» и испортиться.</p>
+                        </div>
+                    </div>
+
+                    <div id="brew-effects">
+                        <h3>Свойства напитков</h3>
+
+                        <h4>Качество ★</h4>
+                        <p>Определяется точностью следования рецепту. Отображается в виде звёзд (от ☆ до ★★★★★). Низкое качество усиливает негативные эффекты и ускоряет их появление. Всего <strong>10 уровней</strong> качества.</p>
+
+                        <h4>Алкогольность</h4>
+                        <p>Отображается в <strong>ml (%)</strong> — видна при наведении на напиток в зельеварке. Уровень опьянения показывается над хотбаром. Снижается со временем или от <strong>ведра молока</strong>.</p>
+
+                        <h4>Негативные эффекты опьянения</h4>
+                        <ul>
+                            <li><strong>Шатание</strong> — вас бросает из стороны в сторону, при сильном опьянении движение почти неконтролируемо</li>
+                            <li><strong>Тошнота</strong> — при чрезмерном потреблении вы начнёте «извергать» айтемы песка душ, которые нельзя подобрать</li>
+                            <li><strong>Слепота</strong> — длительность зависит от качества и крепости напитка</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <hr class="divider">
+
+                <!-- ==================== RECIPES ==================== -->
+                <section class="wiki-section fade-in" id="recipes-section">
+                    <div class="section-header">
+                        <div class="section-icon">📜</div>
+                        <div class="section-header-text">
+                            <h2>Рецепты напитков</h2>
+                            <p>Полный каталог доступных рецептов</p>
+                        </div>
+                    </div>
+
+                    <div class="category-tabs" id="categoryTabs">
+                        <button class="cat-tab active" data-category="all">Все</button>
+                        <button class="cat-tab" data-category="beer">Пиво</button>
+                        <button class="cat-tab" data-category="wine">Вино и сидр</button>
+                        <button class="cat-tab" data-category="spirits">Крепкие</button>
+                        <button class="cat-tab" data-category="other">Прочее</button>
+                    </div>
+
+                    <!-- BEER -->
+                    <div id="recipes-beer">
+                        <div class="recipe-grid">
+
+                            <div class="recipe-card" data-category="beer">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🍺</div>
+                                        <div class="recipe-name">Пиво</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">6 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">6 пшеницы</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">8 минут</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">3 года / любая бочка</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 6 ml — дополнительных эффектов нет</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="beer">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🌾</div>
+                                        <div class="recipe-name">Пшеничное пиво</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">5 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">3 пшеницы</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">8 минут</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">2 года / берёзовая бочка</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 5 ml — дополнительных эффектов нет</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="beer">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🍫</div>
+                                        <div class="recipe-name">Тёмное пиво</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">7 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">6 пшеницы</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">8 минут</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">8 лет / тёмнодубовая бочка</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 7 ml — дополнительных эффектов нет</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- WINE & CIDER -->
+                    <div id="recipes-wine">
+                        <div class="recipe-grid">
+
+                            <div class="recipe-card" data-category="wine">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🍷</div>
+                                        <div class="recipe-name">Красное вино</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">8 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">5 ягод</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">5 минут</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">20 лет / любая бочка</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 8 ml — дополнительных эффектов нет</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="wine">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🍯</div>
+                                        <div class="recipe-name">Медовуха</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">9 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">6 сахарного тростника</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">3 минуты</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">4 года / дубовая бочка</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 9 ml — дополнительных эффектов нет</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="wine">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🍎</div>
+                                        <div class="recipe-name">Яблочная медовуха</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">11 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">6 сахарного тростника, 2 яблока</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">4 минуты</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">4 года / дубовая бочка</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 11 ml — Подводное дыхание II (2:30)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="wine">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🍏</div>
+                                        <div class="recipe-name">Яблочный сидр</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">7 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">14 яблок</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">7 минут</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">3 года / любая бочка</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 7 ml — дополнительных эффектов нет</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- SPIRITS -->
+                    <div id="recipes-spirits">
+                        <div class="recipe-grid">
+
+                            <div class="recipe-card" data-category="spirits">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🍸</div>
+                                        <div class="recipe-name">Яблочный ликёр</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">14 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">12 яблок</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">16 минут</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">3 цикла</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">6 лет / акациевая бочка</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 14 ml — дополнительных эффектов нет</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="spirits">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🥃</div>
+                                        <div class="recipe-name">Виски</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">26 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">10 пшеницы</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">10 минут</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">2 цикла</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">18 лет / еловая бочка</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 26 ml — дополнительных эффектов нет</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="spirits">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🏴‍☠️</div>
+                                        <div class="recipe-name">Ром</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">30 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">18 сахарного тростника</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">6 минут</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">2 цикла</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">14 лет / дубовая бочка</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 30 ml — Огнестойкость (1:40)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="spirits">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🥔</div>
+                                        <div class="recipe-name">Водка</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">20 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">10 картофелин</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">15 минут</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">3 цикла</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 20 ml — Слабость III (0:15)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="spirits">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🍄</div>
+                                        <div class="recipe-name">Грибная водка</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">18 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">10 картофелин, 3 мухомора, 3 коричневых гриба</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">18 минут</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">5 циклов</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 18 ml — Ночное зрение III (1:20), Слабость III (1:20)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="spirits">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🫐</div>
+                                        <div class="recipe-name">Джин</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">20 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">9 пшеницы, 1 яблоко, 6 голубых цветков*</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">6 минут</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">2 цикла</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 20 ml — дополнительных эффектов нет</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Примечание</div>
+                                                <div class="recipe-detail-value">* Синий василёк (равнины) или синяя орхидея (болото). Для массового производства можно построить ферму цветов.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="spirits">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🌵</div>
+                                        <div class="recipe-name">Текила</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">20 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">8 кактусов</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">15 минут</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">2 цикла</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">12 лет / берёзовая бочка</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 20 ml — дополнительных эффектов нет</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="spirits">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🧪</div>
+                                        <div class="recipe-name">Абсент</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">42 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">15 травы</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">3 минуты</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">6 циклов</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 42 ml — Отравление III (0:25)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="spirits">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">💚</div>
+                                        <div class="recipe-name">Зелёный абсент</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">46 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">17 травы, 2 гнилых картофелины</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">5 минут</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">6 циклов</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 46 ml — Ночное зрение III (1:00), Отравление III (0:40)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- OTHER -->
+                    <div id="recipes-other">
+                        <div class="recipe-grid">
+
+                            <div class="recipe-card" data-category="other">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🥣</div>
+                                        <div class="recipe-name">Картофельный суп</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">0 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">5 картофелин, 3 травы</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">3 минуты</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Безалкогольный — мгновенно восстанавливает 4 HP (2 сердца)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="other">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">☕</div>
+                                        <div class="recipe-name">Кофе</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">-6 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">12 какао-бобов, 2 ведра молока</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">2 минуты</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Снижает опьянение на 6 ml — Регенерация (0:05), Скорость (2:20)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recipe-card" data-category="other">
+                                <div class="recipe-header" onclick="toggleRecipe(this)">
+                                    <div class="recipe-header-left">
+                                        <div class="recipe-emoji">🥚</div>
+                                        <div class="recipe-name">Эгг-ног</div>
+                                    </div>
+                                    <div class="recipe-meta-badge">
+                                        <span class="badge badge-alcohol">10 ml</span>
+                                    </div>
+                                    <div class="recipe-toggle">▾</div>
+                                </div>
+                                <div class="recipe-body">
+                                    <div class="recipe-body-inner">
+                                        <div class="recipe-detail-grid">
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ингредиенты</div>
+                                                <div class="recipe-detail-value">5 яиц, 2 сахара, 1 ведро молока</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Ферментация</div>
+                                                <div class="recipe-detail-value">2 минуты</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Дистилляция</div>
+                                                <div class="recipe-detail-value">Не требуется</div>
+                                            </div>
+                                            <div class="recipe-detail">
+                                                <div class="recipe-detail-label">Выдержка</div>
+                                                <div class="recipe-detail-value">3 года / любая бочка</div>
+                                            </div>
+                                            <div class="recipe-detail full-width">
+                                                <div class="recipe-detail-label">Эффекты</div>
+                                                <div class="recipe-detail-value">Алкогольность 10 ml — дополнительных эффектов нет</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- FOOTER -->
+                <div class="footer">
+                    <div class="footer-inner">
+                        <p>CatShade Wiki — Создано с ☾ для игроков</p>
+                        <p>Последнее обновление: 07.02.2026</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Back to Top -->
+    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3l6 6h-4v4H6v-4H2l6-6z"/></svg>
+    </button>
+
+    <script>
+        // Header scroll effect
+        const header = document.getElementById('header');
+        const backToTop = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+            
+            if (window.scrollY > 400) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        // Recipe toggle
+        function toggleRecipe(header) {
+            const card = header.closest('.recipe-card');
+            card.classList.toggle('open');
+        }
+
+        // Category filter
+        const categoryTabs = document.querySelectorAll('.cat-tab');
+        const recipeCards = document.querySelectorAll('.recipe-card');
+
+        categoryTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                categoryTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const category = tab.dataset.category;
+                
+                recipeCards.forEach(card => {
+                    if (category === 'all' || card.dataset.category === category) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Mobile sidebar
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+        });
+
+        // Close sidebar on link click (mobile)
+        document.querySelectorAll('.sidebar-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 900) {
+                    sidebar.classList.remove('mobile-open');
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+
+        // Active sidebar link
+        const sidebarLinks = document.querySelectorAll('.sidebar-links a:not(.sub-links a)');
+        const sections = document.querySelectorAll('.wiki-section, .hero');
+
+        function updateActiveLink() {
+            let current = '';
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= 150) {
+                    current = section.id;
+                }
+            });
+            
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateActiveLink);
+
+        // Fade-in animation
+        const fadeElements = document.querySelectorAll('.fade-in');
+        const fadeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        fadeElements.forEach(el => fadeObserver.observe(el));
+
+        // Search
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const allSidebarLinks = document.querySelectorAll('.sidebar-links a');
+            
+            if (!query) {
+                allSidebarLinks.forEach(link => {
+                    link.style.display = '';
+                });
+                return;
+            }
+            
+            allSidebarLinks.forEach(link => {
+                const text = link.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    link.style.display = '';
+                } else {
+                    link.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
